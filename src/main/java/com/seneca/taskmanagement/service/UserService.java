@@ -101,9 +101,6 @@ public class UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + id));
 
-        if (user.isDeleted()) {
-            return;
-        }
         user.setDeleted(true);
         user.setDeletedAt(LocalDateTime.now());
         userRepository.save(user);
