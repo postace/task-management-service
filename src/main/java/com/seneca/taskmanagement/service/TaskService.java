@@ -170,12 +170,13 @@ public class TaskService {
      */
     @Transactional
     public void deleteTask(Long id) {
-        if (!taskRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Task not found with ID: " + id);
-        }
+        Task task = taskRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Task not found with ID: " + id));
 
-        taskRepository.deleteById(id);
-        log.info("Deleted task with ID: {}", id);
+        task.setDeleted(true);
+        task.setDeletedAt(java.time.LocalDateTime.now());
+        taskRepository.save(task);
+        log.info("Soft deleted task with ID: {}", id);
     }
 
     /**

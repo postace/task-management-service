@@ -1,0 +1,3 @@
+- [ ] Add more field  to task and feature
+- Do we really need to separate to each bug and feature for task. Can we merge it into one?
+- 
