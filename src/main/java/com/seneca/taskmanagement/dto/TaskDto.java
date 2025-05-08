@@ -1,0 +1,47 @@
+package com.seneca.taskmanagement.dto;
+
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.seneca.taskmanagement.domain.TaskStatus;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
+
+import java.time.LocalDateTime;
+
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "taskType")
+@JsonSubTypes({
+        @JsonSubTypes.Type(value = BugDto.class, name = "BUG"),
+        @JsonSubTypes.Type(value = FeatureDto.class, name = "FEATURE")
+})
+@Data
+@SuperBuilder
+@NoArgsConstructor
+@AllArgsConstructor
+@Schema(description = "Abstract base task representation", subTypes = {BugDto.class, FeatureDto.class})
+public abstract class TaskDto {
+
+    @Schema(description = "Unique identifier of the task", example = "1")
+    private Long id;
+
+    @NotBlank(message = "Task name is required")
+    @Schema(description = "Name of the task", example = "Implement login functionality")
+    private String name;
+
+    @Schema(description = "Creation timestamp", example = "2023-12-01T10:15:30")
+    private LocalDateTime createdAt;
+
+    @NotNull(message = "Task status is required")
+    @Schema(description = "Status of the task", example = "OPEN")
+    private TaskStatus status;
+
+    @Schema(description = "ID of the user assigned to this task", example = "1")
+    private Long assignedUserId;
+
+    @Schema(description = "Type discriminator for the task")
+    public abstract String getTaskType();
+}
