@@ -16,7 +16,6 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -29,6 +28,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class UserControllerIntegrationTest {
 
     @Container
+    // TestContainers manage lifecycle of the container will auto release resource when test is done.
+    // So we don't need to use try-with-resources block
+    @SuppressWarnings("resource") 
     static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:15-alpine")
             .withDatabaseName("testdb")
             .withUsername("test")
@@ -56,7 +58,7 @@ public class UserControllerIntegrationTest {
                 .build();
 
         // Test Create User
-        MvcResult createResult = mockMvc.perform(post("/api/users")
+        MvcResult createResult = mockMvc.perform(post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(userDto)))
                 .andExpect(status().isCreated())
@@ -73,7 +75,7 @@ public class UserControllerIntegrationTest {
         assertNotNull(userId);
 
         // Test Get User by ID
-        mockMvc.perform(get("/api/users/{id}", userId))
+        mockMvc.perform(get("/users/{id}", userId))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(userId))
                 .andExpect(jsonPath("$.username").value("testuser"))
@@ -86,7 +88,7 @@ public class UserControllerIntegrationTest {
                 .fullName("Updated User")
                 .build();
 
-        mockMvc.perform(put("/api/users/{id}", userId)
+        mockMvc.perform(put("/users/{id}", userId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updateDto)))
                 .andExpect(status().isOk())
@@ -95,16 +97,16 @@ public class UserControllerIntegrationTest {
                 .andExpect(jsonPath("$.fullName").value("Updated User"));
 
         // Test Get All Users
-        mockMvc.perform(get("/api/users"))
+        mockMvc.perform(get("/users"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").value(userId));
 
         // Test Delete User
-        mockMvc.perform(delete("/api/users/{id}", userId))
+        mockMvc.perform(delete("/users/{id}", userId))
                 .andExpect(status().isNoContent());
 
         // Verify user is deleted
-        mockMvc.perform(get("/api/users/{id}", userId))
+        mockMvc.perform(get("/users/{id}", userId))
                 .andExpect(status().isNotFound());
     }
 }

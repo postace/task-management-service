@@ -19,16 +19,11 @@ public abstract class TaskMapper {
     @Autowired
     protected UserRepository userRepository;
 
-//    @Mapping(target = "assignedUserId", source = "assignedUser.id")
-//    public abstract TaskDto toDto(Task task);
-
     @Mapping(target = "assignedUserId", source = "assignedUser.id")
     public abstract BugDto toBugDto(Bug bug);
 
     @Mapping(target = "assignedUserId", source = "assignedUser.id")
     public abstract FeatureDto toFeatureDto(Feature feature);
-
-//    public abstract List<TaskDto> toDtoList(List<Task> tasks);
 
     @Mapping(target = "assignedUser", source = "assignedUserId", qualifiedByName = "mapUserFromId")
     public abstract Bug toBugEntity(BugDto bugDto);
