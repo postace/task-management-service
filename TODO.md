@@ -1,3 +1,7 @@
-- [ ] Add more field  to task and feature
+- [ ] Add more field  to task and feature, also user
 - Do we really need to separate to each bug and feature for task. Can we merge it into one?
-- 
+- Add error code for the front end to proper parse and handle it
+- Does the hibernate join will slow us down our application???
+- Review loggin carefully, do we need to add something like requestId for proper tracing??
+- A lot of @Transactional, do we really need them??
+- Implement paging for both user and task

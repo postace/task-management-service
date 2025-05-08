@@ -1,6 +1,7 @@
 package com.seneca.taskmanagement.api;
 
 import com.seneca.taskmanagement.dto.UserDto;
+import com.seneca.taskmanagement.dto.UserUpdateDto;
 import com.seneca.taskmanagement.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -67,7 +68,7 @@ public class UserController {
     })
     public ResponseEntity<UserDto> updateUser(
             @Parameter(description = "ID of the user to update") @PathVariable Long id,
-            @Valid @RequestBody UserDto userDto) {
+            @Valid @RequestBody UserUpdateDto userDto) {
         UserDto updatedUser = userService.updateUser(id, userDto);
         return ResponseEntity.ok(updatedUser);
     }

@@ -2,6 +2,7 @@ package com.seneca.taskmanagement.service;
 
 import com.seneca.taskmanagement.domain.User;
 import com.seneca.taskmanagement.dto.UserDto;
+import com.seneca.taskmanagement.dto.UserUpdateDto;
 import com.seneca.taskmanagement.exception.ResourceAlreadyExistsException;
 import com.seneca.taskmanagement.exception.ResourceNotFoundException;
 import com.seneca.taskmanagement.mapper.UserMapper;
@@ -11,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -26,15 +28,19 @@ public class UserService {
      *
      * @param userDto user data to create
      * @return created user
-     * @throws ResourceAlreadyExistsException if username already exists
+     * @throws ResourceAlreadyExistsException if username already exists (including soft-deleted users)
      */
     @Transactional
     public UserDto createUser(UserDto userDto) {
-        if (userRepository.existsByUsername(userDto.getUsername())) {
+        // Check if username exists among both active and deleted users
+        if (userRepository.existsByUsernameIncludingDeleted(userDto.getUsername())) {
             throw new ResourceAlreadyExistsException("User with username " + userDto.getUsername() + " already exists");
         }
 
-        User user = userMapper.toEntity(userDto);
+        User user = new User();
+        user.setUsername(userDto.getUsername());
+        user.setFullName(userDto.getFullName());
+        
         User savedUser = userRepository.save(user);
         log.info("Created user with ID: {}", savedUser.getId());
         return userMapper.toDto(savedUser);
@@ -66,19 +72,19 @@ public class UserService {
     }
 
     /**
-     * Update a user
+     * Update user
      *
      * @param id user ID
-     * @param userDto updated user data
+     * @param updateDto updated user data containing only the full name
      * @return updated user
      * @throws ResourceNotFoundException if user not found
      */
     @Transactional
-    public UserDto updateUser(Long id, UserDto userDto) {
+    public UserDto updateUser(Long id, UserUpdateDto updateDto) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + id));
 
-        userMapper.updateUserFromDto(userDto, user);
+        userMapper.updateUserFromDto(updateDto, user);
         User updatedUser = userRepository.save(user);
         log.info("Updated user with ID: {}", updatedUser.getId());
         return userMapper.toDto(updatedUser);
@@ -92,11 +98,15 @@ public class UserService {
      */
     @Transactional
     public void deleteUser(Long id) {
-        if (!userRepository.existsById(id)) {
-            throw new ResourceNotFoundException("User not found with ID: " + id);
-        }
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + id));
 
-        userRepository.deleteById(id);
-        log.info("Deleted user with ID: {}", id);
+        if (user.isDeleted()) {
+            return;
+        }
+        user.setDeleted(true);
+        user.setDeletedAt(LocalDateTime.now());
+        userRepository.save(user);
+        log.info("Soft deleted user with ID: {}", id);
     }
 }

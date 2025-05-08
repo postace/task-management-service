@@ -7,6 +7,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -24,4 +26,7 @@ public class UserDto {
     @NotBlank(message = "Full name is required")
     @Schema(description = "User's full name", example = "John Doe")
     private String fullName;
+
+    @Schema(description = "Timestamp when the user was created", example = "2025-05-08T10:15:30")
+    private LocalDateTime createdAt;
 }
