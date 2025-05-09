@@ -35,7 +35,6 @@ public class GlobalExceptionHandler {
         LoggingUtils.logOperation(log, "Resource not found: " + ex.getMessage(), metadata);
         
         ErrorResponse errorResponse = new ErrorResponse(
-                HttpStatus.NOT_FOUND.value(),
                 "Resource not found",
                 ex.getMessage(),
                 request.getRequestURI(),
@@ -48,7 +47,6 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleResourceAlreadyExistsException(ResourceAlreadyExistsException ex, HttpServletRequest request) {
         log.error("Resource already exists: {}", ex.getMessage());
         ErrorResponse errorResponse = new ErrorResponse(
-                HttpStatus.CONFLICT.value(),
                 "Resource already exists",
                 ex.getMessage(),
                 request.getRequestURI(),
@@ -70,7 +68,6 @@ public class GlobalExceptionHandler {
         LoggingUtils.logOperation(log, "Bad request: " + ex.getMessage(), metadata);
 
         ErrorResponse errorResponse = new ErrorResponse(
-                HttpStatus.BAD_REQUEST.value(),
                 "Bad request",
                 ex.getMessage(),
                 request.getRequestURI(),
@@ -101,7 +98,6 @@ public class GlobalExceptionHandler {
         LoggingUtils.logOperation(log, "Validation error", metadata);
 
         ErrorResponse errorResponse = new ErrorResponse(
-                HttpStatus.BAD_REQUEST.value(),
                 "Validation error",
                 "Validation failed for request parameters",
                 request.getRequestURI(),
@@ -148,7 +144,6 @@ public class GlobalExceptionHandler {
         log.error("Unhandled exception: {}", ex.getMessage(), ex);
 
         ErrorResponse errorResponse = new ErrorResponse(
-                HttpStatus.INTERNAL_SERVER_ERROR.value(),
                 "Internal server error",
                 "An unexpected error occurred",
                 request.getRequestURI(),
@@ -161,9 +156,9 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    public record ErrorResponse(int status, String message, String details, String path, LocalDateTime timestamp, Map<String, String> errors) {
-        public ErrorResponse(int status, String message, String details, String path, LocalDateTime timestamp) {
-            this(status, message, details, path, timestamp, null);
+    public record ErrorResponse(String message, String details, String path, LocalDateTime timestamp, Map<String, String> errors) {
+        public ErrorResponse(String message, String details, String path, LocalDateTime timestamp) {
+            this(message, details, path, timestamp, null);
         }
 
         public ErrorResponse addAdditionalInfo(String key, String value) {
@@ -172,7 +167,7 @@ public class GlobalExceptionHandler {
                 newErrors.putAll(errors);
             }
             newErrors.put(key, value);
-            return new ErrorResponse(status, message, details, path, timestamp, newErrors);
+            return new ErrorResponse(message, details, path, timestamp, newErrors);
         }
     }
 
