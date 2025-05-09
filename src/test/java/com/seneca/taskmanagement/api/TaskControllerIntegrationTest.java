@@ -134,8 +134,13 @@ public class TaskControllerIntegrationTest {
         mockMvc.perform(get("/tasks"))
                 .andExpect(status().isOk())
                 .andDo(print())
-                .andExpect(jsonPath("$.content[0].id").value(taskId.toString()))
-                .andExpect(jsonPath("$.pageable").exists());
+                .andExpect(jsonPath("$.items[0].id").value(taskId.toString()))
+                .andExpect(jsonPath("$.page").exists())
+                .andExpect(jsonPath("$.size").exists())
+                .andExpect(jsonPath("$.totalElements").exists())
+                .andExpect(jsonPath("$.totalPages").exists())
+                .andExpect(jsonPath("$.hasNext").exists())
+                .andExpect(jsonPath("$.hasPrevious").exists());
 
         // Test Delete Task
         mockMvc.perform(delete("/tasks/{id}", taskId))
@@ -212,8 +217,13 @@ public class TaskControllerIntegrationTest {
         // Test Get All Tasks
         mockMvc.perform(get("/tasks"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content[0].id").value(taskId.toString()))
-                .andExpect(jsonPath("$.pageable").exists());
+                .andExpect(jsonPath("$.items[0].id").value(taskId.toString()))
+                .andExpect(jsonPath("$.page").exists())
+                .andExpect(jsonPath("$.size").exists())
+                .andExpect(jsonPath("$.totalElements").exists())
+                .andExpect(jsonPath("$.totalPages").exists())
+                .andExpect(jsonPath("$.hasNext").exists())
+                .andExpect(jsonPath("$.hasPrevious").exists());
 
         // Test Delete Task
         mockMvc.perform(delete("/tasks/{id}", taskId))

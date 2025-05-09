@@ -3,6 +3,7 @@ package com.seneca.taskmanagement.api;
 import com.seneca.taskmanagement.domain.TaskStatus;
 import com.seneca.taskmanagement.dto.BugDto;
 import com.seneca.taskmanagement.dto.FeatureDto;
+import com.seneca.taskmanagement.dto.PaginatedResponse;
 import com.seneca.taskmanagement.dto.TaskDto;
 import com.seneca.taskmanagement.service.TaskService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -58,15 +59,15 @@ public class TaskController {
     }
 
     @GetMapping
-    @Operation(summary = "Get all tasks", description = "Returns a list of all tasks with optional filtering")
+    @Operation(summary = "Get all tasks", description = "Returns a paginated list of all tasks with optional filtering")
     @ApiResponse(responseCode = "200", description = "List of tasks retrieved successfully")
-    public ResponseEntity<Page<TaskDto>> getTasks(
+    public ResponseEntity<PaginatedResponse<TaskDto>> getTasks(
             @Parameter(description = "Filter tasks by user ID") @RequestParam(required = false) Optional<UUID> userId,
             @Parameter(description = "Filter tasks by status") @RequestParam(required = false) Optional<TaskStatus> status,
             @Parameter(description = "Search tasks by name") @RequestParam(required = false) Optional<String> searchTerm,
             @PageableDefault(size = 10) Pageable pageable) {
         Page<TaskDto> tasks = taskService.findTasksWithFilters(userId, status, searchTerm, pageable);
-        return ResponseEntity.ok(tasks);
+        return ResponseEntity.ok(PaginatedResponse.from(tasks));
     }
 
     @PutMapping("/{id}")

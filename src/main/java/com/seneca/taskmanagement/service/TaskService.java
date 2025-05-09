@@ -48,6 +48,7 @@ public class TaskService {
         } else {
             throw new BadRequestException("Invalid task type. Must be either BUG or FEATURE");
         }
+        task.setStatus(TaskStatus.OPEN);
         Task savedTask = taskRepository.save(task);
         log.info("Created {} task with ID: {}", savedTask.getClass().getSimpleName(), savedTask.getId());
         return taskMapper.toDtoByType(savedTask);
@@ -95,9 +96,7 @@ public class TaskService {
             Pageable pageable) {
 
         // Validate user ID if provided
-        if (userId.isPresent()) {
-            validateUserExists(userId.get());
-        }
+        userId.ifPresent(this::validateUserExists);
 
         Page<Task> taskPage = taskRepository.findTasksWithFilters(userId, status, searchTerm, pageable);
         return taskPage.map(taskMapper::toDtoByType);

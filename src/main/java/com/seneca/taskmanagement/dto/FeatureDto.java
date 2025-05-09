@@ -1,6 +1,5 @@
 package com.seneca.taskmanagement.dto;
 
-import com.seneca.taskmanagement.domain.TaskStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.Max;

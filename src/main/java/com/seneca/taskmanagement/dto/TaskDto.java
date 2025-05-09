@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.seneca.taskmanagement.domain.TaskStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -44,7 +43,6 @@ public abstract class TaskDto {
     @Schema(description = "Last update timestamp", example = "2023-12-01T10:15:30")
     private LocalDateTime updatedAt;
 
-    @NotNull(message = "Task status is required")
     @Schema(description = "Status of the task", example = "OPEN")
     private TaskStatus status;
 
