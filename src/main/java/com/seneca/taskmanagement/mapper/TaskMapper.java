@@ -33,9 +33,11 @@ public abstract class TaskMapper {
     public abstract Feature toFeatureEntity(FeatureDto featureDto);
 
     @Mapping(target = "assignedUser", source = "assignedUserId", qualifiedByName = "mapUserFromId")
+    @Mapping(target = "createdAt", ignore = true)
     public abstract void updateBugFromDto(BugDto bugDto, @MappingTarget Bug bug);
 
     @Mapping(target = "assignedUser", source = "assignedUserId", qualifiedByName = "mapUserFromId")
+    @Mapping(target = "createdAt", ignore = true)
     public abstract void updateFeatureFromDto(FeatureDto featureDto, @MappingTarget Feature feature);
 
     @Named("mapUserFromId")

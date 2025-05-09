@@ -21,7 +21,6 @@ public class Feature extends Task {
     @Column(columnDefinition = "TEXT")
     private String businessValue;
 
-    @Column(nullable = false)
     private LocalDate deadline;
 
     @Column(columnDefinition = "TEXT")

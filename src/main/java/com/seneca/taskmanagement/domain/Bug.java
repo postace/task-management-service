@@ -17,14 +17,14 @@ import lombok.experimental.SuperBuilder;
 public class Bug extends Task {
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column()
     private BugSeverity severity;
 
     @Column(columnDefinition = "TEXT")
     private String stepsToReproduce;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column()
     private BugPriority priority;
 
     @Column(length = 100)

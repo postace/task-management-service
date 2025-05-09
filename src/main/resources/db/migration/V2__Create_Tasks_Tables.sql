@@ -12,12 +12,12 @@ CREATE TABLE tasks (
     -- Bug specific fields
     severity VARCHAR(20),
     steps_to_reproduce TEXT,
-    priority VARCHAR(20),
+    priority VARCHAR(20) NULL,
     environment VARCHAR(100),
     
     -- Feature specific fields
     business_value TEXT,
-    deadline DATE,
+    deadline DATE NULL,
     acceptance_criteria TEXT,
     estimated_effort INTEGER,
     
