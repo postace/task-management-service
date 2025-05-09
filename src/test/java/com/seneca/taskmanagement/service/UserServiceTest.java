@@ -14,6 +14,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.util.Arrays;
 import java.util.List;
@@ -113,19 +117,21 @@ class UserServiceTest {
     void getAllUsers_Success() {
         // Arrange
         List<User> users = Arrays.asList(user);
-        when(userRepository.findAll()).thenReturn(users);
+        Page<User> userPage = new PageImpl<>(users);
+        Pageable pageable = PageRequest.of(0, 10);
+        when(userRepository.findAll(any(Pageable.class))).thenReturn(userPage);
 
         // Act
-        List<UserDto> result = userService.getAllUsers();
+        Page<UserDto> result = userService.getAllUsers(pageable);
 
         // Assert
         assertNotNull(result);
-        assertEquals(1, result.size());
-        assertEquals(user.getId(), result.get(0).getId());
-        assertEquals(user.getUsername(), result.get(0).getUsername());
-        assertEquals(user.getFullName(), result.get(0).getFullName());
+        assertEquals(1, result.getContent().size());
+        assertEquals(user.getId(), result.getContent().get(0).getId());
+        assertEquals(user.getUsername(), result.getContent().get(0).getUsername());
+        assertEquals(user.getFullName(), result.getContent().get(0).getFullName());
 
-        verify(userRepository).findAll();
+        verify(userRepository).findAll(pageable);
     }
 
     @Test
