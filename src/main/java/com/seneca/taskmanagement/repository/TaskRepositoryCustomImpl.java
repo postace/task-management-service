@@ -33,7 +33,7 @@ public class TaskRepositoryCustomImpl implements TaskRepositoryCustom {
         BooleanBuilder predicate = new BooleanBuilder();
 
         // Apply filters if present
-        userId.ifPresent(id -> predicate.and(task.assignedUser.id.eq(id)));
+        userId.ifPresent(id -> predicate.and(task.assignedUserId.eq(id)));
         status.ifPresent(s -> predicate.and(task.status.eq(s)));
         searchTerm.ifPresent(term -> {
             String pattern = "%" + term.toLowerCase() + "%";

@@ -43,9 +43,8 @@ public abstract class Task {
     @Column(nullable = false)
     private TaskStatus status;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User assignedUser;
+    @Column(name = "user_id")
+    private UUID assignedUserId;
 
     @Column(nullable = false)
     private boolean deleted = false;

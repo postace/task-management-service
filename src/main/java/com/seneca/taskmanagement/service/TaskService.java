@@ -48,7 +48,6 @@ public class TaskService {
         } else {
             throw new BadRequestException("Invalid task type. Must be either BUG or FEATURE");
         }
-        task.setStatus(TaskStatus.OPEN);
         Task savedTask = taskRepository.save(task);
         log.info("Created {} task with ID: {}", savedTask.getClass().getSimpleName(), savedTask.getId());
         return taskMapper.toDtoByType(savedTask);

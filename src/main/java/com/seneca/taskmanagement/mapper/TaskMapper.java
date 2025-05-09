@@ -20,33 +20,19 @@ public abstract class TaskMapper {
     @Autowired
     protected UserRepository userRepository;
 
-    @Mapping(target = "assignedUserId", source = "assignedUser.id")
     public abstract BugDto toBugDto(Bug bug);
 
-    @Mapping(target = "assignedUserId", source = "assignedUser.id")
     public abstract FeatureDto toFeatureDto(Feature feature);
 
-    @Mapping(target = "assignedUser", source = "assignedUserId", qualifiedByName = "mapUserFromId")
     public abstract Bug toBugEntity(BugDto bugDto);
 
-    @Mapping(target = "assignedUser", source = "assignedUserId", qualifiedByName = "mapUserFromId")
     public abstract Feature toFeatureEntity(FeatureDto featureDto);
 
-    @Mapping(target = "assignedUser", source = "assignedUserId", qualifiedByName = "mapUserFromId")
     @Mapping(target = "createdAt", ignore = true)
     public abstract void updateBugFromDto(BugDto bugDto, @MappingTarget Bug bug);
 
-    @Mapping(target = "assignedUser", source = "assignedUserId", qualifiedByName = "mapUserFromId")
     @Mapping(target = "createdAt", ignore = true)
     public abstract void updateFeatureFromDto(FeatureDto featureDto, @MappingTarget Feature feature);
-
-    @Named("mapUserFromId")
-    protected User mapUserFromId(UUID userId) {
-        if (userId == null) {
-            return null;
-        }
-        return userRepository.findById(userId).orElse(null);
-    }
 
     // Convert task to appropriate DTO based on its type
     public TaskDto toDtoByType(Task task) {
