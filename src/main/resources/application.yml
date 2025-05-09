@@ -14,10 +14,10 @@ spring:
   jpa:
     hibernate:
       ddl-auto: validate
-    show-sql: true
+    show-sql: false
+    format_sql: false
     properties:
       hibernate:
-        format_sql: true
         dialect: org.hibernate.dialect.PostgreSQLDialect
         jdbc:
           batch_size: 50
@@ -94,11 +94,15 @@ management:
       percentiles-histogram:
         http.server.requests: true
 
+# Logging configuration
 logging:
   level:
     root: INFO
+    org.springframework: INFO
+    org.hibernate: WARN
+    org.hibernate.SQL: OFF
+    org.hibernate.type.descriptor.sql: OFF
+    com.zaxxer.hikari: WARN
     com.seneca.taskmanagement: INFO
-    org.hibernate.SQL: DEBUG
-    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
   pattern:
-    console: '%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n'
+    console: "%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(%5p) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n%wEx"

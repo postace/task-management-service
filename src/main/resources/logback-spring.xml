@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+    <include resource="org/springframework/boot/logging/logback/console-appender.xml"/>
+
+    <springProperty scope="context" name="springAppName" source="spring.application.name" defaultValue="task-management-service"/>
+    <springProperty scope="context" name="activeProfile" source="spring.profiles.active" defaultValue="default"/>
+
+    <property name="LOG_FILE" value="${LOG_FILE:-${LOG_PATH:-${LOG_TEMP:-${java.io.tmpdir:-/tmp}}}/task-management-service.log}"/>
+
+    <!-- Console appender with JSON format for development -->
+    <appender name="JSON_CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <includeMdcKeyName>requestId</includeMdcKeyName>
+            <includeMdcKeyName>userId</includeMdcKeyName>
+            <includeMdcKeyName>clientIp</includeMdcKeyName>
+            <includeMdcKeyName>endpoint</includeMdcKeyName>
+            <includeMdcKeyName>httpMethod</includeMdcKeyName>
+            <includeMdcKeyName>statusCode</includeMdcKeyName>
+            <includeMdcKeyName>executionTime</includeMdcKeyName>
+            <customFields>{"application":"${springAppName}","profile":"${activeProfile}"}</customFields>
+        </encoder>
+    </appender>
+
+    <!-- File appender with JSON format for production -->
+    <appender name="JSON_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_FILE}</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_FILE}.%d{yyyy-MM-dd}.gz</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <includeMdcKeyName>requestId</includeMdcKeyName>
+            <includeMdcKeyName>userId</includeMdcKeyName>
+            <includeMdcKeyName>clientIp</includeMdcKeyName>
+            <includeMdcKeyName>endpoint</includeMdcKeyName>
+            <includeMdcKeyName>httpMethod</includeMdcKeyName>
+            <includeMdcKeyName>statusCode</includeMdcKeyName>
+            <includeMdcKeyName>executionTime</includeMdcKeyName>
+            <customFields>{"application":"${springAppName}","profile":"${activeProfile}"}</customFields>
+        </encoder>
+    </appender>
+
+    <!-- Async appender for better performance -->
+    <appender name="ASYNC_JSON_FILE" class="ch.qos.logback.classic.AsyncAppender">
+        <appender-ref ref="JSON_FILE" />
+        <queueSize>512</queueSize>
+        <discardingThreshold>0</discardingThreshold>
+        <includeCallerData>true</includeCallerData>
+    </appender>
+
+    <!-- Disable SQL logging -->
+    <logger name="org.hibernate.SQL" level="OFF"/>
+    <logger name="org.hibernate.type.descriptor.sql" level="OFF"/>
+    <logger name="org.hibernate.stat" level="OFF"/>
+    <logger name="org.hibernate.engine.internal.StatisticalLoggingSessionEventListener" level="OFF"/>
+    
+    <!-- Disable Spring transaction logging -->
+    <logger name="org.springframework.transaction" level="OFF"/>
+    <logger name="org.springframework.orm.jpa" level="OFF"/>
+    
+    <!-- Environment-specific configurations -->
+    <springProfile name="dev,default">
+        <root level="INFO">
+            <appender-ref ref="JSON_CONSOLE" />
+        </root>
+        <logger name="com.seneca.taskmanagement" level="INFO"/>
+    </springProfile>
+
+    <springProfile name="prod">
+        <root level="INFO">
+            <appender-ref ref="ASYNC_JSON_FILE" />
+        </root>
+        <logger name="com.seneca.taskmanagement" level="INFO"/>
+    </springProfile>
+
+    <springProfile name="test">
+        <root level="INFO">
+            <appender-ref ref="JSON_CONSOLE" />
+        </root>
+        <logger name="com.seneca.taskmanagement" level="DEBUG"/>
+    </springProfile>
+</configuration>
