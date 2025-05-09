@@ -22,10 +22,8 @@ import java.time.LocalDate;
 public class FeatureDto extends TaskDto {
 
     @NotNull(message = "Business value is required")
-    @Min(value = 1, message = "Business value must be at least 1")
-    @Max(value = 10, message = "Business value must not exceed 10")
-    @Schema(description = "Business value on a scale of 1-10", example = "8")
-    private Integer businessValue;
+    @Schema(description = "Business value description", example = "High ROI potential with quick market adoption")
+    private String businessValue;
 
     @NotNull(message = "Deadline is required")
     @Future(message = "Deadline must be in the future")

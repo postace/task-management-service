@@ -1,5 +1,5 @@
 
-- check db to see if data is correctly saved
+
 - validate business fields in bugDto and featureDto
 - update bug is not okay, we need to separate these model for update instead
 - Change to use CreateUserRequest, UpdateUserRequest

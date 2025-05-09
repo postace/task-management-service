@@ -162,7 +162,7 @@ public class TaskControllerIntegrationTest {
                 .description("Implement OAuth authentication")
                 .assignedUserId(user.getId())
                 .deadline(LocalDate.now().plusWeeks(2))
-                .businessValue(8)
+                .businessValue("High ROI potential")
                 .estimatedEffort(5)
                 .status(TaskStatus.OPEN)
                 .build();
@@ -175,7 +175,7 @@ public class TaskControllerIntegrationTest {
                 .andExpect(jsonPath("$.id").exists())
                 .andExpect(jsonPath("$.name").value("Add OAuth Support"))
                 .andExpect(jsonPath("$.taskType").value("FEATURE"))
-                .andExpect(jsonPath("$.businessValue").value(8))
+                .andExpect(jsonPath("$.businessValue").value("High ROI potential"))
                 .andExpect(jsonPath("$.estimatedEffort").value(5))
                 .andReturn();
 
@@ -191,7 +191,7 @@ public class TaskControllerIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(taskId.toString()))
                 .andExpect(jsonPath("$.name").value("Add OAuth Support"))
-                .andExpect(jsonPath("$.businessValue").value(8))
+                .andExpect(jsonPath("$.businessValue").value("High ROI potential"))
                 .andExpect(jsonPath("$.estimatedEffort").value(5));
 
         // Test Update Feature Task
@@ -201,7 +201,7 @@ public class TaskControllerIntegrationTest {
                 .description("Implement OAuth authentication with Google")
                 .assignedUserId(user.getId())
                 .deadline(LocalDate.now().plusWeeks(3))
-                .businessValue(10)
+                .businessValue("Very high business impact")
                 .estimatedEffort(8)
                 .status(TaskStatus.IN_PROGRESS)
                 .build();
@@ -211,7 +211,7 @@ public class TaskControllerIntegrationTest {
                         .content(objectMapper.writeValueAsString(updateDto)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(taskId.toString()))
-                .andExpect(jsonPath("$.businessValue").value(10))
+                .andExpect(jsonPath("$.businessValue").value("Very high business impact"))
                 .andExpect(jsonPath("$.estimatedEffort").value(8));
 
         // Test Get All Tasks
