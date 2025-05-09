@@ -4,6 +4,8 @@ import com.seneca.taskmanagement.domain.*;
 import com.seneca.taskmanagement.dto.BugDto;
 import com.seneca.taskmanagement.dto.FeatureDto;
 import com.seneca.taskmanagement.dto.TaskDto;
+import com.seneca.taskmanagement.dto.UpdateBugRequest;
+import com.seneca.taskmanagement.dto.UpdateFeatureRequest;
 import com.seneca.taskmanagement.exception.BadRequestException;
 import com.seneca.taskmanagement.exception.ResourceNotFoundException;
 import com.seneca.taskmanagement.mapper.TaskMapper;
@@ -29,7 +31,8 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-
+import static com.seneca.taskmanagement.domain.Bug.BugPriority;
+import static com.seneca.taskmanagement.domain.Bug.BugSeverity;
 @ExtendWith(MockitoExtension.class)
 class TaskServiceTest {
 
@@ -219,45 +222,149 @@ class TaskServiceTest {
     }
 
     @Test
-    void updateTask_Bug_Success() {
-        // Arrange
-        when(taskRepository.findById(any(UUID.class))).thenReturn(Optional.of(bug));
-        when(userRepository.existsById(any(UUID.class))).thenReturn(true);
-        when(taskRepository.save(any(Bug.class))).thenReturn(bug);
+    void updateBugTask_Success() {
+        // Given
+        UUID taskId = UUID.randomUUID();
+        UUID userId = UUID.randomUUID();
+        Bug existingBug = new Bug();
+        existingBug.setId(taskId);
+        existingBug.setName("Old bug name");
+        existingBug.setPriority(BugPriority.LOW);
+        existingBug.setSeverity(BugSeverity.LOW);
 
-        BugDto updateDto = BugDto.builder()
-                .name("Updated Bug")
-                .description("Updated Description")
-                .severity(Bug.BugSeverity.LOW)
-                .assignedUserId(userId)
-                .status(TaskStatus.IN_PROGRESS)
-                .build();
+        User user = new User();
+        user.setId(userId);
 
-        // Act
-        TaskDto result = taskService.updateTask(bug.getId(), updateDto);
+        UpdateBugRequest updateRequest = new UpdateBugRequest();
+        updateRequest.setName("Updated bug name");
+        updateRequest.setPriority(Bug.BugPriority.HIGH);
+        updateRequest.setSeverity(Bug.BugSeverity.HIGH);
+        updateRequest.setAssignedUserId(userId);
 
-        // Assert
-        assertInstanceOf(BugDto.class, result);
-        BugDto resultBug = (BugDto) result;
-        assertEquals(updateDto.getName(), resultBug.getName());
-        assertEquals(updateDto.getSeverity(), resultBug.getSeverity());
-        assertEquals(updateDto.getStatus(), resultBug.getStatus());
+        when(taskRepository.findById(taskId)).thenReturn(Optional.of(existingBug));
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(taskRepository.save(any(Bug.class))).thenAnswer(i -> i.getArguments()[0]);
 
-        verify(userRepository).existsById(userId);
-        verify(taskRepository).save(any(Bug.class));
+        // When
+        TaskDto result = taskService.updateTask(taskId, updateRequest);
+
+        // Then
+        assertNotNull(result);
+        verify(taskRepository).findById(taskId);
+        verify(userRepository).findById(userId);
+        verify(taskRepository).save(argThat(task -> {
+            Bug bug = (Bug) task;
+            return bug.getName().equals("Updated bug name") &&
+                   bug.getPriority() == Bug.BugPriority.HIGH &&
+                   bug.getSeverity() == Bug.BugSeverity.HIGH &&
+                   bug.getAssignedUser().equals(user);
+        }));
     }
 
     @Test
-    void updateTask_TypeMismatch_ThrowsException() {
-        // Arrange
-        when(taskRepository.findById(any(UUID.class))).thenReturn(Optional.of(bug));
-        when(userRepository.existsById(any(UUID.class))).thenReturn(true);
+    void updateFeatureTask_Success() {
+        // Given
+        UUID taskId = UUID.randomUUID();
+        UUID userId = UUID.randomUUID();
+        Feature existingFeature = new Feature();
+        existingFeature.setId(taskId);
+        existingFeature.setName("Old feature name");
+        existingFeature.setBusinessValue("Old value");
 
-        // Act & Assert
-        assertThrows(BadRequestException.class, () -> taskService.updateTask(bug.getId(), featureDto));
-        verify(taskRepository).findById(bug.getId());
-        verify(userRepository).existsById(userId);
-        verifyNoMoreInteractions(taskRepository);
+        User user = new User();
+        user.setId(userId);
+
+        UpdateFeatureRequest updateRequest = new UpdateFeatureRequest();
+        updateRequest.setName("Updated feature name");
+        updateRequest.setBusinessValue("Updated value");
+        updateRequest.setEstimatedEffort(5);
+        updateRequest.setAssignedUserId(userId);
+
+        when(taskRepository.findById(taskId)).thenReturn(Optional.of(existingFeature));
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(taskRepository.save(any(Feature.class))).thenAnswer(i -> i.getArguments()[0]);
+
+        // When
+        TaskDto result = taskService.updateTask(taskId, updateRequest);
+
+        // Then
+        assertNotNull(result);
+        verify(taskRepository).findById(taskId);
+        verify(userRepository).findById(userId);
+        verify(taskRepository).save(argThat(task -> {
+            Feature feature = (Feature) task;
+            return feature.getName().equals("Updated feature name") &&
+                   feature.getBusinessValue().equals("Updated value") &&
+                   feature.getEstimatedEffort() == 5 &&
+                   feature.getAssignedUser().equals(user);
+        }));
+    }
+
+    @Test
+    void updateTask_TypeMismatch_ThrowsBadRequestException() {
+        // Given
+        UUID taskId = UUID.randomUUID();
+        Bug existingBug = new Bug();
+        existingBug.setId(taskId);
+
+        UpdateFeatureRequest updateRequest = new UpdateFeatureRequest();
+        updateRequest.setName("Updated name");
+
+        when(taskRepository.findById(taskId)).thenReturn(Optional.of(existingBug));
+
+        // When/Then
+        assertThrows(BadRequestException.class, () -> 
+            taskService.updateTask(taskId, updateRequest));
+    }
+
+    @Test
+    void updateTask_UserNotFound_ThrowsResourceNotFoundException() {
+        // Given
+        UUID taskId = UUID.randomUUID();
+        UUID userId = UUID.randomUUID();
+        Bug existingBug = new Bug();
+        existingBug.setId(taskId);
+
+        UpdateBugRequest updateRequest = new UpdateBugRequest();
+        updateRequest.setAssignedUserId(userId);
+
+        when(taskRepository.findById(taskId)).thenReturn(Optional.of(existingBug));
+        when(userRepository.findById(userId)).thenReturn(Optional.empty());
+
+        // When/Then
+        assertThrows(ResourceNotFoundException.class, () -> 
+            taskService.updateTask(taskId, updateRequest));
+    }
+
+    @Test
+    void updateTask_PartialUpdate_Success() {
+        // Given
+        UUID taskId = UUID.randomUUID();
+        Bug existingBug = new Bug();
+        existingBug.setId(taskId);
+        existingBug.setName("Old name");
+        existingBug.setDescription("Old description");
+        existingBug.setPriority(BugPriority.LOW);
+        existingBug.setSeverity(BugSeverity.LOW);
+
+        UpdateBugRequest updateRequest = new UpdateBugRequest();
+        updateRequest.setPriority(BugPriority.HIGH); // Only update priority
+
+        when(taskRepository.findById(taskId)).thenReturn(Optional.of(existingBug));
+        when(taskRepository.save(any(Bug.class))).thenAnswer(i -> i.getArguments()[0]);
+
+        // When
+        TaskDto result = taskService.updateTask(taskId, updateRequest);
+
+        // Then
+        assertNotNull(result);
+        verify(taskRepository).save(argThat(task -> {
+            Bug bug = (Bug) task;
+            return bug.getName().equals("Old name") && // Should remain unchanged
+                   bug.getDescription().equals("Old description") && // Should remain unchanged
+                   bug.getPriority() == BugPriority.HIGH && // Should be updated
+                   bug.getSeverity() == BugSeverity.LOW; // Should remain unchanged
+        }));
     }
 
     @Test

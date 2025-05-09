@@ -4,6 +4,9 @@ import com.seneca.taskmanagement.domain.*;
 import com.seneca.taskmanagement.dto.BugDto;
 import com.seneca.taskmanagement.dto.FeatureDto;
 import com.seneca.taskmanagement.dto.TaskDto;
+import com.seneca.taskmanagement.dto.UpdateBugRequest;
+import com.seneca.taskmanagement.dto.UpdateFeatureRequest;
+import com.seneca.taskmanagement.dto.UpdateTaskRequest;
 import com.seneca.taskmanagement.exception.BadRequestException;
 import com.seneca.taskmanagement.exception.ResourceNotFoundException;
 import com.seneca.taskmanagement.mapper.TaskMapper;
@@ -104,39 +107,79 @@ public class TaskService {
     /**
      * Update a task
      *
-     * @param id      task ID
-     * @param taskDto updated task data
+     * @param id           task ID
+     * @param updateRequest updated task data
      * @return updated task
      * @throws ResourceNotFoundException if task not found
      * @throws BadRequestException if task type mismatch
      */
     @Transactional
-    public TaskDto updateTask(UUID id, TaskDto taskDto) {
+    public TaskDto updateTask(UUID id, UpdateTaskRequest updateRequest) {
         Task task = taskRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Task not found with ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Task not found with id: " + id));
 
-        validateUserExists(taskDto.getAssignedUserId());
-
-        // Ensure the task type matches
-        if (taskDto instanceof BugDto && !(task instanceof Bug)) {
-            throw new BadRequestException("Task with ID: " + id + " is not a bug");
-        } else if (taskDto instanceof FeatureDto && !(task instanceof Feature)) {
-            throw new BadRequestException("Task with ID: " + id + " is not a feature");
+        // Verify task type matches
+        if (task instanceof Bug && !(updateRequest instanceof UpdateBugRequest) ||
+            task instanceof Feature && !(updateRequest instanceof UpdateFeatureRequest)) {
+            throw new BadRequestException("Task type mismatch. Cannot update " + 
+                task.getClass().getSimpleName() + " with " + updateRequest.getClass().getSimpleName());
         }
 
-        Task updatedTask;
-        if (taskDto instanceof BugDto && task instanceof Bug) {
-            taskMapper.updateBugFromDto((BugDto) taskDto, (Bug) task);
-            updatedTask = taskRepository.save(task);
-        } else if (taskDto instanceof FeatureDto && task instanceof Feature) {
-            taskMapper.updateFeatureFromDto((FeatureDto) taskDto, (Feature) task);
-            updatedTask = taskRepository.save(task);
-        } else {
-            throw new BadRequestException("Invalid task type. Must be either BUG or FEATURE");
+        // Update common fields if they are not null
+        if (updateRequest.getName() != null) {
+            task.setName(updateRequest.getName());
+        }
+        if (updateRequest.getDescription() != null) {
+            task.setDescription(updateRequest.getDescription());
+        }
+        if (updateRequest.getStatus() != null) {
+            task.setStatus(updateRequest.getStatus());
+        }
+        if (updateRequest.getAssignedUserId() != null) {
+            User user = userRepository.findById(updateRequest.getAssignedUserId())
+                    .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + updateRequest.getAssignedUserId()));
+            task.setAssignedUser(user);
         }
 
-        log.info("Updated {} task with ID: {}", updatedTask.getClass().getSimpleName(), updatedTask.getId());
+        // Update type-specific fields
+        if (task instanceof Bug && updateRequest instanceof UpdateBugRequest) {
+            updateBugFields((Bug) task, (UpdateBugRequest) updateRequest);
+        } else if (task instanceof Feature && updateRequest instanceof UpdateFeatureRequest) {
+            updateFeatureFields((Feature) task, (UpdateFeatureRequest) updateRequest);
+        }
+
+        Task updatedTask = taskRepository.save(task);
         return taskMapper.toDtoByType(updatedTask);
+    }
+
+    private void updateBugFields(Bug bug, UpdateBugRequest updateRequest) {
+        if (updateRequest.getSeverity() != null) {
+            bug.setSeverity(updateRequest.getSeverity());
+        }
+        if (updateRequest.getPriority() != null) {
+            bug.setPriority(updateRequest.getPriority());
+        }
+        if (updateRequest.getStepsToReproduce() != null) {
+            bug.setStepsToReproduce(updateRequest.getStepsToReproduce());
+        }
+        if (updateRequest.getEnvironment() != null) {
+            bug.setEnvironment(updateRequest.getEnvironment());
+        }
+    }
+
+    private void updateFeatureFields(Feature feature, UpdateFeatureRequest updateRequest) {
+        if (updateRequest.getBusinessValue() != null) {
+            feature.setBusinessValue(updateRequest.getBusinessValue());
+        }
+        if (updateRequest.getDeadline() != null) {
+            feature.setDeadline(updateRequest.getDeadline());
+        }
+        if (updateRequest.getAcceptanceCriteria() != null) {
+            feature.setAcceptanceCriteria(updateRequest.getAcceptanceCriteria());
+        }
+        if (updateRequest.getEstimatedEffort() != null) {
+            feature.setEstimatedEffort(updateRequest.getEstimatedEffort());
+        }
     }
 
     /**

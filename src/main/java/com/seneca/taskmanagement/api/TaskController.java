@@ -5,6 +5,7 @@ import com.seneca.taskmanagement.dto.BugDto;
 import com.seneca.taskmanagement.dto.FeatureDto;
 import com.seneca.taskmanagement.dto.PaginatedResponse;
 import com.seneca.taskmanagement.dto.TaskDto;
+import com.seneca.taskmanagement.dto.UpdateTaskRequest;
 import com.seneca.taskmanagement.service.TaskService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -79,8 +80,8 @@ public class TaskController {
     })
     public ResponseEntity<TaskDto> updateTask(
             @Parameter(description = "ID of the task to update") @PathVariable UUID id,
-            @Valid @RequestBody TaskDto taskDto) {
-        TaskDto updatedTask = taskService.updateTask(id, taskDto);
+            @RequestBody UpdateTaskRequest updateRequest) {
+        TaskDto updatedTask = taskService.updateTask(id, updateRequest);
         return ResponseEntity.ok(updatedTask);
     }
 
