@@ -1,0 +1,64 @@
+spring:
+  jpa:
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+        generate_statistics: false
+  datasource:
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 10
+      idle-timeout: 60000
+      connection-timeout: 30000
+  task:
+    execution:
+      pool:
+        core-size: 16
+        max-size: 32
+        queue-capacity: 200
+
+server:
+  port: 80
+  tomcat:
+    max-threads: 400
+    accept-count: 200
+    connection-timeout: 5000
+    max-connections: 10000
+  compression:
+    enabled: true
+    min-response-size: 2KB
+    mime-types: application/json,application/xml,text/html,text/plain
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+      base-path: /actuator
+  endpoint:
+    health:
+      show-details: WHEN_AUTHORIZED
+      probes:
+        enabled: true
+  health:
+    livenessstate:
+      enabled: true
+    readinessstate:
+      enabled: true
+
+logging:
+  level:
+    root: INFO
+    com.seneca.taskmanagement: INFO
+  pattern:
+    console: '%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n'
+  file:
+    name: /var/log/task-management-service.log
+    max-size: 100MB
+    max-history: 30
+  logback:
+    rollingpolicy:
+      max-file-size: 100MB
+      max-history: 30
+      total-size-cap: 3GB

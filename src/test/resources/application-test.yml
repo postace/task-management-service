@@ -1,0 +1,26 @@
+spring:
+  datasource:
+    # TestContainers will override these properties dynamically
+    url: jdbc:postgresql://localhost:5432/testdb
+    username: test
+    password: test
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create-drop # Use create-drop for tests
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+  flyway:
+    enabled: false # Disable Flyway for tests
+
+server:
+  servlet:
+    context-path: /api
+
+logging:
+  level:
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+    com.seneca.taskmanagement: DEBUG
