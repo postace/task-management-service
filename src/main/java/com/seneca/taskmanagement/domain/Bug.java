@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 @Entity
-@Table(name = "bugs")
 @DiscriminatorValue("BUG")
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -24,10 +23,23 @@ public class Bug extends Task {
     @Column(columnDefinition = "TEXT")
     private String stepsToReproduce;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private BugPriority priority;
+
+    @Column(length = 100)
+    private String environment;
+
     public enum BugSeverity {
         LOW,
         MEDIUM,
         HIGH,
         CRITICAL
+    }
+
+    public enum BugPriority {
+        LOW,
+        MEDIUM,
+        HIGH
     }
 }

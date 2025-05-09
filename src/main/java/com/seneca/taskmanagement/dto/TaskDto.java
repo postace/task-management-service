@@ -26,21 +26,28 @@ import java.time.LocalDateTime;
 public abstract class TaskDto {
 
     @Schema(description = "Unique identifier of the task", example = "1")
-    private Long id;
+    private UUID id;
 
     @NotBlank(message = "Task name is required")
+    @Size(max = 100)
     @Schema(description = "Name of the task", example = "Implement login functionality")
     private String name;
 
+    @Schema(description = "Detailed description of the task")
+    private String description;
+
     @Schema(description = "Creation timestamp", example = "2023-12-01T10:15:30")
     private LocalDateTime createdAt;
+
+    @Schema(description = "Last update timestamp", example = "2023-12-01T10:15:30")
+    private LocalDateTime updatedAt;
 
     @NotNull(message = "Task status is required")
     @Schema(description = "Status of the task", example = "OPEN")
     private TaskStatus status;
 
-    @Schema(description = "ID of the user assigned to this task", example = "1")
-    private Long assignedUserId;
+    @Schema(description = "ID of the user assigned to this task")
+    private UUID assignedUserId;
 
     @Schema(description = "Type discriminator for the task")
     public abstract String getTaskType();

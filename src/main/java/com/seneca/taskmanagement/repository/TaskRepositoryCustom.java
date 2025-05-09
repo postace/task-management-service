@@ -19,7 +19,7 @@ public interface TaskRepositoryCustom {
      * @return Page of filtered tasks
      */
     Page<Task> findTasksWithFilters(
-            Optional<Long> userId,
+            Optional<UUID> userId,
             Optional<TaskStatus> status,
             Optional<String> searchTerm,
             Pageable pageable

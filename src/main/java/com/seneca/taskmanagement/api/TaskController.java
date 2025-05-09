@@ -63,7 +63,7 @@ public class TaskController {
             @ApiResponse(responseCode = "404", description = "Task not found")
     })
     public ResponseEntity<TaskDto> getTaskById(
-            @Parameter(description = "ID of the task to retrieve") @PathVariable Long id) {
+            @Parameter(description = "ID of the task to retrieve") @PathVariable UUID id) {
         TaskDto task = taskService.getTaskById(id);
         return ResponseEntity.ok(task);
     }
@@ -72,7 +72,7 @@ public class TaskController {
     @Operation(summary = "Get all tasks", description = "Returns a list of all tasks with optional filtering")
     @ApiResponse(responseCode = "200", description = "List of tasks retrieved successfully")
     public ResponseEntity<Page<TaskDto>> getTasks(
-            @Parameter(description = "Filter tasks by user ID") @RequestParam(required = false) Optional<Long> userId,
+            @Parameter(description = "Filter tasks by user ID") @RequestParam(required = false) Optional<UUID> userId,
             @Parameter(description = "Filter tasks by status") @RequestParam(required = false) Optional<TaskStatus> status,
             @Parameter(description = "Search tasks by name") @RequestParam(required = false) Optional<String> searchTerm,
             @PageableDefault(size = 10) Pageable pageable) {
@@ -88,7 +88,7 @@ public class TaskController {
             @ApiResponse(responseCode = "404", description = "Task not found")
     })
     public ResponseEntity<TaskDto> updateBug(
-            @Parameter(description = "ID of the bug to update") @PathVariable Long id,
+            @Parameter(description = "ID of the bug to update") @PathVariable UUID id,
             @Valid @RequestBody BugDto bugDto) {
         TaskDto updatedBug = taskService.updateBug(id, bugDto);
         return ResponseEntity.ok(updatedBug);
@@ -102,7 +102,7 @@ public class TaskController {
             @ApiResponse(responseCode = "404", description = "Task not found")
     })
     public ResponseEntity<TaskDto> updateFeature(
-            @Parameter(description = "ID of the feature to update") @PathVariable Long id,
+            @Parameter(description = "ID of the feature to update") @PathVariable UUID id,
             @Valid @RequestBody FeatureDto featureDto) {
         TaskDto updatedFeature = taskService.updateFeature(id, featureDto);
         return ResponseEntity.ok(updatedFeature);
@@ -115,7 +115,7 @@ public class TaskController {
             @ApiResponse(responseCode = "404", description = "Task not found")
     })
     public ResponseEntity<Void> deleteTask(
-            @Parameter(description = "ID of the task to delete") @PathVariable Long id) {
+            @Parameter(description = "ID of the task to delete") @PathVariable UUID id) {
         taskService.deleteTask(id);
         return ResponseEntity.noContent().build();
     }

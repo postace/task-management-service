@@ -32,6 +32,14 @@ public class FeatureDto extends TaskDto {
     @Schema(description = "Deadline for the feature implementation", example = "2024-01-15")
     private LocalDate deadline;
 
+    @Schema(description = "Acceptance criteria for the feature", example = "1. User can login with email\n2. Password reset functionality works")
+    private String acceptanceCriteria;
+
+    @NotNull(message = "Estimated effort is required")
+    @Min(value = 1, message = "Estimated effort must be at least 1")
+    @Schema(description = "Estimated effort in story points", example = "5")
+    private Integer estimatedEffort;
+
     @Override
     public String getTaskType() {
         return "FEATURE";

@@ -23,7 +23,7 @@ public class TaskRepositoryCustomImpl implements TaskRepositoryCustom {
 
     @Override
     public Page<Task> findTasksWithFilters(
-            Optional<Long> userId,
+            Optional<UUID> userId,
             Optional<TaskStatus> status,
             Optional<String> searchTerm,
             Pageable pageable) {

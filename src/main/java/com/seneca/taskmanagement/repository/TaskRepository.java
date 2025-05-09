@@ -6,5 +6,5 @@ import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface TaskRepository extends JpaRepository<Task, Long>, QuerydslPredicateExecutor<Task>, TaskRepositoryCustom {
+public interface TaskRepository extends JpaRepository<Task, UUID>, QuerydslPredicateExecutor<Task>, TaskRepositoryCustom {
 }

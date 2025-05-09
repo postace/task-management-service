@@ -68,7 +68,7 @@ public class TaskService {
      * @throws ResourceNotFoundException if task not found
      */
     @Transactional(readOnly = true)
-    public TaskDto getTaskById(Long id) {
+    public TaskDto getTaskById(UUID id) {
         Task task = taskRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Task not found with ID: " + id));
         return taskMapper.toDtoByType(task);
@@ -96,7 +96,7 @@ public class TaskService {
      */
     @Transactional(readOnly = true)
     public Page<TaskDto> findTasksWithFilters(
-            Optional<Long> userId,
+            Optional<UUID> userId,
             Optional<TaskStatus> status,
             Optional<String> searchTerm,
             Pageable pageable) {
@@ -119,7 +119,7 @@ public class TaskService {
      * @throws ResourceNotFoundException if task not found or not a bug
      */
     @Transactional
-    public TaskDto updateBug(Long id, BugDto bugDto) {
+    public TaskDto updateBug(UUID id, BugDto bugDto) {
         Task task = taskRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Task not found with ID: " + id));
 
@@ -145,7 +145,7 @@ public class TaskService {
      * @throws ResourceNotFoundException if task not found or not a feature
      */
     @Transactional
-    public TaskDto updateFeature(Long id, FeatureDto featureDto) {
+    public TaskDto updateFeature(UUID id, FeatureDto featureDto) {
         Task task = taskRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Task not found with ID: " + id));
 
@@ -169,7 +169,7 @@ public class TaskService {
      * @throws ResourceNotFoundException if task not found
      */
     @Transactional
-    public void deleteTask(Long id) {
+    public void deleteTask(UUID id) {
         Task task = taskRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Task not found with ID: " + id));
 
@@ -185,7 +185,7 @@ public class TaskService {
      * @param userId user ID to validate
      * @throws ResourceNotFoundException if user not found
      */
-    private void validateUserExists(Long userId) {
+    private void validateUserExists(UUID userId) {
         if (userId != null && !userRepository.existsById(userId)) {
             throw new ResourceNotFoundException("User not found with ID: " + userId);
         }

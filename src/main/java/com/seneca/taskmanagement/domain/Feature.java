@@ -10,7 +10,6 @@ import lombok.experimental.SuperBuilder;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "features")
 @DiscriminatorValue("FEATURE")
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -19,9 +18,14 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class Feature extends Task {
 
-    @Column(nullable = false)
-    private Integer businessValue;
+    @Column(columnDefinition = "TEXT")
+    private String businessValue;
 
     @Column(nullable = false)
     private LocalDate deadline;
+
+    @Column(columnDefinition = "TEXT")
+    private String acceptanceCriteria;
+
+    private Integer estimatedEffort;
 }
