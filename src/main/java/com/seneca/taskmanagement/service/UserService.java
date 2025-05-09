@@ -9,6 +9,8 @@ import com.seneca.taskmanagement.mapper.UserMapper;
 import com.seneca.taskmanagement.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -62,14 +64,15 @@ public class UserService {
     }
 
     /**
-     * Get all users
+     * Get all users with pagination
      *
-     * @return list of all users
+     * @param pageable pagination information
+     * @return page of users
      */
     @Transactional(readOnly = true)
-    public List<UserDto> getAllUsers() {
-        List<User> users = userRepository.findAll();
-        return userMapper.toDtoList(users);
+    public Page<UserDto> getAllUsers(Pageable pageable) {
+        Page<User> userPage = userRepository.findAll(pageable);
+        return userPage.map(userMapper::toDto);
     }
 
     /**

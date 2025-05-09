@@ -2,6 +2,7 @@ package com.seneca.taskmanagement.api;
 
 import com.seneca.taskmanagement.dto.UserDto;
 import com.seneca.taskmanagement.dto.UserUpdateDto;
+import com.seneca.taskmanagement.dto.PaginatedResponse;
 import com.seneca.taskmanagement.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -10,6 +11,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -51,11 +54,18 @@ public class UserController {
     }
 
     @GetMapping
-    @Operation(summary = "Get all users", description = "Returns a list of all users")
-    @ApiResponse(responseCode = "200", description = "List of users retrieved successfully")
-    public ResponseEntity<List<UserDto>> getAllUsers() {
-        List<UserDto> users = userService.getAllUsers();
-        return ResponseEntity.ok(users);
+    @Operation(summary = "Get all users", description = "Returns a paginated list of users")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "List of users retrieved successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid pagination parameters")
+    })
+    public ResponseEntity<PaginatedResponse<UserDto>> getAllUsers(
+            @Parameter(description = "Page number (0-based)", example = "0")
+            @RequestParam(defaultValue = "0") int page,
+            @Parameter(description = "Number of items per page", example = "10")
+            @RequestParam(defaultValue = "10") int size) {
+        Page<UserDto> userPage = userService.getAllUsers(PageRequest.of(page, size));
+        return ResponseEntity.ok(PaginatedResponse.from(userPage));
     }
 
     @PutMapping("/{id}")
