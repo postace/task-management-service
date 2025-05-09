@@ -25,10 +25,6 @@ server:
     accept-count: 200
     connection-timeout: 5000
     max-connections: 10000
-  compression:
-    enabled: true
-    min-response-size: 2KB
-    mime-types: application/json,application/xml,text/html,text/plain
 
 management:
   endpoints:
@@ -55,8 +51,6 @@ logging:
     console: '%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n'
   file:
     name: /var/log/task-management-service.log
-    max-size: 100MB
-    max-history: 30
   logback:
     rollingpolicy:
       max-file-size: 100MB

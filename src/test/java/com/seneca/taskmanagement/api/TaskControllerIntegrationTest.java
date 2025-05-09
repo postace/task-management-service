@@ -95,7 +95,7 @@ public class TaskControllerIntegrationTest {
                 .andExpect(jsonPath("$.id").exists())
                 .andExpect(jsonPath("$.name").value("Critical Login Bug"))
                 .andExpect(jsonPath("$.severity").value("HIGH"))
-                .andExpect(jsonPath("$.task_type").value("BUG"))
+                .andExpect(jsonPath("$.taskType").value("BUG"))
                 .andReturn();
 
         // Extract created task ID
@@ -169,9 +169,9 @@ public class TaskControllerIntegrationTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").exists())
                 .andExpect(jsonPath("$.name").value("Add OAuth Support"))
-                .andExpect(jsonPath("$.task_type").value("FEATURE"))
-                .andExpect(jsonPath("$.business_value").value(8))
-                .andExpect(jsonPath("$.estimated_effort").value(5))
+                .andExpect(jsonPath("$.taskType").value("FEATURE"))
+                .andExpect(jsonPath("$.businessValue").value(8))
+                .andExpect(jsonPath("$.estimatedEffort").value(5))
                 .andReturn();
 
         // Extract created task ID
@@ -186,8 +186,8 @@ public class TaskControllerIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(taskId.toString()))
                 .andExpect(jsonPath("$.name").value("Add OAuth Support"))
-                .andExpect(jsonPath("$.business_value").value(8))
-                .andExpect(jsonPath("$.estimated_effort").value(5));
+                .andExpect(jsonPath("$.businessValue").value(8))
+                .andExpect(jsonPath("$.estimatedEffort").value(5));
 
         // Test Update Feature Task
         FeatureDto updateDto = FeatureDto.builder()
@@ -206,8 +206,8 @@ public class TaskControllerIntegrationTest {
                         .content(objectMapper.writeValueAsString(updateDto)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(taskId.toString()))
-                .andExpect(jsonPath("$.business_value").value(10))
-                .andExpect(jsonPath("$.estimated_effort").value(8));
+                .andExpect(jsonPath("$.businessValue").value(10))
+                .andExpect(jsonPath("$.estimatedEffort").value(8));
 
         // Test Get All Tasks
         mockMvc.perform(get("/tasks"))

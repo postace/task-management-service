@@ -66,7 +66,7 @@ public class UserControllerIntegrationTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").exists())
                 .andExpect(jsonPath("$.username").value("testuser"))
-                .andExpect(jsonPath("$.full_name").value("Test User"))
+                .andExpect(jsonPath("$.fullName").value("Test User"))
                 .andReturn();
 
         // Extract created user ID
@@ -81,7 +81,7 @@ public class UserControllerIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(userId.toString()))
                 .andExpect(jsonPath("$.username").value("testuser"))
-                .andExpect(jsonPath("$.full_name").value("Test User"));
+                .andExpect(jsonPath("$.fullName").value("Test User"));
 
         // Test Update User
         UserDto updateDto = UserDto.builder()
@@ -96,7 +96,7 @@ public class UserControllerIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(userId.toString()))
                 .andExpect(jsonPath("$.username").value("testuser"))
-                .andExpect(jsonPath("$.full_name").value("Updated User"));
+                .andExpect(jsonPath("$.fullName").value("Updated User"));
 
         // Test Get All Users
         mockMvc.perform(get("/users"))

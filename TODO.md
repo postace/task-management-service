@@ -4,4 +4,4 @@
 - Does the hibernate join will slow us down our application???
 - do we need to add something like requestId for proper tracing??
 - A lot of @Transactional, do we really need them??
-- Implement paging for both user and task
+- Implement paging for both user

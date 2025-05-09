@@ -31,7 +31,6 @@ spring:
     locations: classpath:db/migration
   jackson:
     default-property-inclusion: non_null
-    property-naming-strategy: SNAKE_CASE
     serialization:
       WRITE_DATES_AS_TIMESTAMPS: false
       FAIL_ON_EMPTY_BEANS: false
@@ -94,9 +93,6 @@ management:
     distribution:
       percentiles-histogram:
         http.server.requests: true
-    export:
-      prometheus:
-        enabled: true
 
 logging:
   level:
