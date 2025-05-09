@@ -18,6 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -40,14 +41,15 @@ class UserServiceTest {
         userMapper = new UserMapperImpl();
         userService = new UserService(userRepository, userMapper);
 
+        UUID userId = UUID.randomUUID();
         userDto = UserDto.builder()
-                .id(1L)
+                .id(userId)
                 .username("testuser")
                 .fullName("Test User")
                 .build();
 
         user = User.builder()
-                .id(1L)
+                .id(userId)
                 .username("testuser")
                 .fullName("Test User")
                 .build();
@@ -84,27 +86,27 @@ class UserServiceTest {
     @Test
     void getUserById_Success() {
         // Arrange
-        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
+        when(userRepository.findById(any(UUID.class))).thenReturn(Optional.of(user));
 
         // Act
-        UserDto result = userService.getUserById(1L);
+        UserDto result = userService.getUserById(user.getId());
 
         // Assert
         assertNotNull(result);
         assertEquals(user.getId(), result.getId());
         assertEquals(user.getUsername(), result.getUsername());
         assertEquals(user.getFullName(), result.getFullName());
-        verify(userRepository).findById(1L);
+        verify(userRepository).findById(user.getId());
     }
 
     @Test
     void getUserById_NotFound_ThrowsException() {
         // Arrange
-        when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
+        when(userRepository.findById(any(UUID.class))).thenReturn(Optional.empty());
 
         // Act & Assert
-        assertThrows(ResourceNotFoundException.class, () -> userService.getUserById(1L));
-        verify(userRepository).findById(1L);
+        assertThrows(ResourceNotFoundException.class, () -> userService.getUserById(UUID.randomUUID()));
+        verify(userRepository).findById(any(UUID.class));
     }
 
     @Test
@@ -132,11 +134,11 @@ class UserServiceTest {
         UserUpdateDto updateDto = new UserUpdateDto();
         updateDto.setFullName("Updated Name");
         
-        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
+        when(userRepository.findById(any(UUID.class))).thenReturn(Optional.of(user));
         when(userRepository.save(any(User.class))).thenReturn(user);
 
         // Act
-        UserDto result = userService.updateUser(1L, updateDto);
+        UserDto result = userService.updateUser(user.getId(), updateDto);
 
         // Assert
         assertNotNull(result);
@@ -144,7 +146,7 @@ class UserServiceTest {
         assertEquals(user.getUsername(), result.getUsername());
         assertEquals("Updated Name", result.getFullName());
 
-        verify(userRepository).findById(1L);
+        verify(userRepository).findById(user.getId());
         verify(userRepository).save(any());
     }
 
@@ -153,35 +155,36 @@ class UserServiceTest {
         // Arrange
         UserUpdateDto updateDto = new UserUpdateDto();
         updateDto.setFullName("Updated Name");
-        when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
+        when(userRepository.findById(any(UUID.class))).thenReturn(Optional.empty());
 
         // Act & Assert
-        assertThrows(ResourceNotFoundException.class, () -> userService.updateUser(1L, updateDto));
-        verify(userRepository).findById(1L);
+        assertThrows(ResourceNotFoundException.class, () -> userService.updateUser(UUID.randomUUID(), updateDto));
+        verify(userRepository).findById(any(UUID.class));
         verifyNoMoreInteractions(userRepository);
     }
 
     @Test
     void deleteUser_Success() {
         // Arrange
-        when(userRepository.findById(anyLong())).thenReturn(Optional.of(User.builder().build()));
+        UUID testId = UUID.randomUUID();
+        when(userRepository.findById(any(UUID.class))).thenReturn(Optional.of(User.builder().id(testId).build()));
 
         // Act
-        userService.deleteUser(1L);
+        userService.deleteUser(testId);
 
         // Assert
-        verify(userRepository).findById(1L);
+        verify(userRepository).findById(testId);
         verify(userRepository).save(Mockito.any());
     }
 
     @Test
     void deleteUser_NotFound_ThrowsException() {
         // Arrange
-        when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
+        when(userRepository.findById(any(UUID.class))).thenReturn(Optional.empty());
 
         // Act & Assert
-        assertThrows(ResourceNotFoundException.class, () -> userService.deleteUser(1L));
-        verify(userRepository).findById(1L);
+        assertThrows(ResourceNotFoundException.class, () -> userService.deleteUser(UUID.randomUUID()));
+        verify(userRepository).findById(any(UUID.class));
         verifyNoMoreInteractions(userRepository);
     }
 }

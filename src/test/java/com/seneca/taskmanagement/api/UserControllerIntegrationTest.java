@@ -16,6 +16,8 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+import java.util.UUID;
+
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -64,22 +66,22 @@ public class UserControllerIntegrationTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").exists())
                 .andExpect(jsonPath("$.username").value("testuser"))
-                .andExpect(jsonPath("$.fullName").value("Test User"))
+                .andExpect(jsonPath("$.full_name").value("Test User"))
                 .andReturn();
 
         // Extract created user ID
         UserDto createdUser = objectMapper.readValue(
                 createResult.getResponse().getContentAsString(),
                 UserDto.class);
-        Long userId = createdUser.getId();
+        UUID userId = createdUser.getId();
         assertNotNull(userId);
 
         // Test Get User by ID
         mockMvc.perform(get("/users/{id}", userId))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(userId))
+                .andExpect(jsonPath("$.id").value(userId.toString()))
                 .andExpect(jsonPath("$.username").value("testuser"))
-                .andExpect(jsonPath("$.fullName").value("Test User"));
+                .andExpect(jsonPath("$.full_name").value("Test User"));
 
         // Test Update User
         UserDto updateDto = UserDto.builder()
@@ -92,14 +94,14 @@ public class UserControllerIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updateDto)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(userId))
+                .andExpect(jsonPath("$.id").value(userId.toString()))
                 .andExpect(jsonPath("$.username").value("testuser"))
-                .andExpect(jsonPath("$.fullName").value("Updated User"));
+                .andExpect(jsonPath("$.full_name").value("Updated User"));
 
         // Test Get All Users
         mockMvc.perform(get("/users"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].id").value(userId));
+                .andExpect(jsonPath("$[0].id").value(userId.toString()));
 
         // Test Delete User
         mockMvc.perform(delete("/users/{id}", userId))

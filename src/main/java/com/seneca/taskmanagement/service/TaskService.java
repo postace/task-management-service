@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -29,35 +30,27 @@ public class TaskService {
     private final TaskMapper taskMapper;
 
     /**
-     * Create a new bug task
+     * Create a new task
      *
-     * @param bugDto bug task data
-     * @return created bug task
+     * @param taskDto task data (can be bug or feature)
+     * @return created task
      * @throws ResourceNotFoundException if assigned user not found
+     * @throws BadRequestException if task type is invalid
      */
     @Transactional
-    public TaskDto createBug(BugDto bugDto) {
-        validateUserExists(bugDto.getAssignedUserId());
-        Bug bug = taskMapper.toBugEntity(bugDto);
-        Bug savedBug = taskRepository.save(bug);
-        log.info("Created bug task with ID: {}", savedBug.getId());
-        return taskMapper.toBugDto(savedBug);
-    }
-
-    /**
-     * Create a new feature task
-     *
-     * @param featureDto feature task data
-     * @return created feature task
-     * @throws ResourceNotFoundException if assigned user not found
-     */
-    @Transactional
-    public TaskDto createFeature(FeatureDto featureDto) {
-        validateUserExists(featureDto.getAssignedUserId());
-        Feature feature = taskMapper.toFeatureEntity(featureDto);
-        Feature savedFeature = taskRepository.save(feature);
-        log.info("Created feature task with ID: {}", savedFeature.getId());
-        return taskMapper.toFeatureDto(savedFeature);
+    public TaskDto createTask(TaskDto taskDto) {
+        validateUserExists(taskDto.getAssignedUserId());
+        Task task;
+        if (taskDto instanceof BugDto) {
+            task = taskMapper.toBugEntity((BugDto) taskDto);
+        } else if (taskDto instanceof FeatureDto) {
+            task = taskMapper.toFeatureEntity((FeatureDto) taskDto);
+        } else {
+            throw new BadRequestException("Invalid task type. Must be either BUG or FEATURE");
+        }
+        Task savedTask = taskRepository.save(task);
+        log.info("Created {} task with ID: {}", savedTask.getClass().getSimpleName(), savedTask.getId());
+        return taskMapper.toDtoByType(savedTask);
     }
 
     /**
@@ -111,55 +104,41 @@ public class TaskService {
     }
 
     /**
-     * Update a bug task
+     * Update a task
      *
-     * @param id     bug task ID
-     * @param bugDto updated bug task data
-     * @return updated bug task
-     * @throws ResourceNotFoundException if task not found or not a bug
+     * @param id      task ID
+     * @param taskDto updated task data
+     * @return updated task
+     * @throws ResourceNotFoundException if task not found
+     * @throws BadRequestException if task type mismatch
      */
     @Transactional
-    public TaskDto updateBug(UUID id, BugDto bugDto) {
+    public TaskDto updateTask(UUID id, TaskDto taskDto) {
         Task task = taskRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Task not found with ID: " + id));
 
-        if (!(task instanceof Bug)) {
+        validateUserExists(taskDto.getAssignedUserId());
+
+        // Ensure the task type matches
+        if (taskDto instanceof BugDto && !(task instanceof Bug)) {
             throw new BadRequestException("Task with ID: " + id + " is not a bug");
-        }
-
-        validateUserExists(bugDto.getAssignedUserId());
-
-        Bug bug = (Bug) task;
-        taskMapper.updateBugFromDto(bugDto, bug);
-        Bug updatedBug = taskRepository.save(bug);
-        log.info("Updated bug task with ID: {}", updatedBug.getId());
-        return taskMapper.toBugDto(updatedBug);
-    }
-
-    /**
-     * Update a feature task
-     *
-     * @param id         feature task ID
-     * @param featureDto updated feature task data
-     * @return updated feature task
-     * @throws ResourceNotFoundException if task not found or not a feature
-     */
-    @Transactional
-    public TaskDto updateFeature(UUID id, FeatureDto featureDto) {
-        Task task = taskRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Task not found with ID: " + id));
-
-        if (!(task instanceof Feature)) {
+        } else if (taskDto instanceof FeatureDto && !(task instanceof Feature)) {
             throw new BadRequestException("Task with ID: " + id + " is not a feature");
         }
 
-        validateUserExists(featureDto.getAssignedUserId());
+        Task updatedTask;
+        if (taskDto instanceof BugDto && task instanceof Bug) {
+            taskMapper.updateBugFromDto((BugDto) taskDto, (Bug) task);
+            updatedTask = taskRepository.save(task);
+        } else if (taskDto instanceof FeatureDto && task instanceof Feature) {
+            taskMapper.updateFeatureFromDto((FeatureDto) taskDto, (Feature) task);
+            updatedTask = taskRepository.save(task);
+        } else {
+            throw new BadRequestException("Invalid task type. Must be either BUG or FEATURE");
+        }
 
-        Feature feature = (Feature) task;
-        taskMapper.updateFeatureFromDto(featureDto, feature);
-        Feature updatedFeature = taskRepository.save(feature);
-        log.info("Updated feature task with ID: {}", updatedFeature.getId());
-        return taskMapper.toFeatureDto(updatedFeature);
+        log.info("Updated {} task with ID: {}", updatedTask.getClass().getSimpleName(), updatedTask.getId());
+        return taskMapper.toDtoByType(updatedTask);
     }
 
     /**

@@ -5,8 +5,6 @@ import com.seneca.taskmanagement.dto.UserUpdateDto;
 import com.seneca.taskmanagement.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -17,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/users")
@@ -46,7 +45,7 @@ public class UserController {
             @ApiResponse(responseCode = "404", description = "User not found")
     })
     public ResponseEntity<UserDto> getUserById(
-            @Parameter(description = "ID of the user to retrieve") @PathVariable Long id) {
+            @Parameter(description = "ID of the user to retrieve") @PathVariable UUID id) {
         UserDto user = userService.getUserById(id);
         return ResponseEntity.ok(user);
     }
@@ -67,7 +66,7 @@ public class UserController {
             @ApiResponse(responseCode = "404", description = "User not found")
     })
     public ResponseEntity<UserDto> updateUser(
-            @Parameter(description = "ID of the user to update") @PathVariable Long id,
+            @Parameter(description = "ID of the user to update") @PathVariable UUID id,
             @Valid @RequestBody UserUpdateDto userDto) {
         UserDto updatedUser = userService.updateUser(id, userDto);
         return ResponseEntity.ok(updatedUser);
@@ -80,7 +79,7 @@ public class UserController {
             @ApiResponse(responseCode = "404", description = "User not found")
     })
     public ResponseEntity<Void> deleteUser(
-            @Parameter(description = "ID of the user to delete") @PathVariable Long id) {
+            @Parameter(description = "ID of the user to delete") @PathVariable UUID id) {
         userService.deleteUser(id);
         return ResponseEntity.noContent().build();
     }

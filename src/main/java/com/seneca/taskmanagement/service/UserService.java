@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -54,7 +55,7 @@ public class UserService {
      * @throws ResourceNotFoundException if user not found
      */
     @Transactional(readOnly = true)
-    public UserDto getUserById(Long id) {
+    public UserDto getUserById(UUID id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + id));
         return userMapper.toDto(user);
@@ -80,7 +81,7 @@ public class UserService {
      * @throws ResourceNotFoundException if user not found
      */
     @Transactional
-    public UserDto updateUser(Long id, UserUpdateDto updateDto) {
+    public UserDto updateUser(UUID id, UserUpdateDto updateDto) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + id));
 
@@ -97,7 +98,7 @@ public class UserService {
      * @throws ResourceNotFoundException if user not found
      */
     @Transactional
-    public void deleteUser(Long id) {
+    public void deleteUser(UUID id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + id));
 

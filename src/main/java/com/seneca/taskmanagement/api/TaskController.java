@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/tasks")
@@ -32,28 +33,16 @@ public class TaskController {
 
     private final TaskService taskService;
 
-    @PostMapping("/bugs")
-    @Operation(summary = "Create a new bug", description = "Creates a new bug task with the provided information")
+    @PostMapping
+    @Operation(summary = "Create a new task", description = "Creates a new task (bug or feature) with the provided information")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Bug created successfully"),
+            @ApiResponse(responseCode = "201", description = "Task created successfully"),
             @ApiResponse(responseCode = "400", description = "Invalid input"),
             @ApiResponse(responseCode = "404", description = "Assigned user not found")
     })
-    public ResponseEntity<TaskDto> createBug(@Valid @RequestBody BugDto bugDto) {
-        TaskDto createdBug = taskService.createBug(bugDto);
-        return new ResponseEntity<>(createdBug, HttpStatus.CREATED);
-    }
-
-    @PostMapping("/features")
-    @Operation(summary = "Create a new feature", description = "Creates a new feature task with the provided information")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Feature created successfully"),
-            @ApiResponse(responseCode = "400", description = "Invalid input"),
-            @ApiResponse(responseCode = "404", description = "Assigned user not found")
-    })
-    public ResponseEntity<TaskDto> createFeature(@Valid @RequestBody FeatureDto featureDto) {
-        TaskDto createdFeature = taskService.createFeature(featureDto);
-        return new ResponseEntity<>(createdFeature, HttpStatus.CREATED);
+    public ResponseEntity<TaskDto> createTask(@Valid @RequestBody TaskDto taskDto) {
+        TaskDto createdTask = taskService.createTask(taskDto);
+        return new ResponseEntity<>(createdTask, HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
@@ -80,32 +69,18 @@ public class TaskController {
         return ResponseEntity.ok(tasks);
     }
 
-    @PutMapping("/bugs/{id}")
-    @Operation(summary = "Update a bug", description = "Updates a bug task with the provided information")
+    @PutMapping("/{id}")
+    @Operation(summary = "Update a task", description = "Updates a task (bug or feature) with the provided information")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Bug updated successfully"),
-            @ApiResponse(responseCode = "400", description = "Invalid input or task is not a bug"),
+            @ApiResponse(responseCode = "200", description = "Task updated successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid input"),
             @ApiResponse(responseCode = "404", description = "Task not found")
     })
-    public ResponseEntity<TaskDto> updateBug(
-            @Parameter(description = "ID of the bug to update") @PathVariable UUID id,
-            @Valid @RequestBody BugDto bugDto) {
-        TaskDto updatedBug = taskService.updateBug(id, bugDto);
-        return ResponseEntity.ok(updatedBug);
-    }
-
-    @PutMapping("/features/{id}")
-    @Operation(summary = "Update a feature", description = "Updates a feature task with the provided information")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Feature updated successfully"),
-            @ApiResponse(responseCode = "400", description = "Invalid input or task is not a feature"),
-            @ApiResponse(responseCode = "404", description = "Task not found")
-    })
-    public ResponseEntity<TaskDto> updateFeature(
-            @Parameter(description = "ID of the feature to update") @PathVariable UUID id,
-            @Valid @RequestBody FeatureDto featureDto) {
-        TaskDto updatedFeature = taskService.updateFeature(id, featureDto);
-        return ResponseEntity.ok(updatedFeature);
+    public ResponseEntity<TaskDto> updateTask(
+            @Parameter(description = "ID of the task to update") @PathVariable UUID id,
+            @Valid @RequestBody TaskDto taskDto) {
+        TaskDto updatedTask = taskService.updateTask(id, taskDto);
+        return ResponseEntity.ok(updatedTask);
     }
 
     @DeleteMapping("/{id}")

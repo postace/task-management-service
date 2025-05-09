@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Data
 @Builder
@@ -16,8 +17,8 @@ import java.time.LocalDateTime;
 @Schema(description = "User representation for API interaction")
 public class UserDto {
 
-    @Schema(description = "Unique identifier of the user", example = "1")
-    private Long id;
+    @Schema(description = "Unique identifier of the user", example = "123e4567-e89b-12d3-a456-426614174000")
+    private UUID id;
 
     @NotBlank(message = "Username is required")
     @Schema(description = "Unique username", example = "jdoe")

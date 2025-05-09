@@ -12,6 +12,7 @@ import org.mapstruct.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
+import java.util.UUID;
 
 @Mapper(componentModel = "spring", uses = {UserMapper.class})
 public abstract class TaskMapper {
@@ -38,7 +39,7 @@ public abstract class TaskMapper {
     public abstract void updateFeatureFromDto(FeatureDto featureDto, @MappingTarget Feature feature);
 
     @Named("mapUserFromId")
-    protected User mapUserFromId(Long userId) {
+    protected User mapUserFromId(UUID userId) {
         if (userId == null) {
             return null;
         }
