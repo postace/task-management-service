@@ -12,10 +12,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -33,7 +31,6 @@ public class UserService {
      * @return created user
      * @throws ResourceAlreadyExistsException if username already exists (including soft-deleted users)
      */
-    @Transactional
     public UserDto createUser(UserDto userDto) {
         // Check if username exists among both active and deleted users
         if (userRepository.existsByUsernameIncludingDeleted(userDto.getUsername())) {
@@ -56,7 +53,6 @@ public class UserService {
      * @return user data
      * @throws ResourceNotFoundException if user not found
      */
-    @Transactional(readOnly = true)
     public UserDto getUserById(UUID id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + id));
@@ -69,7 +65,6 @@ public class UserService {
      * @param pageable pagination information
      * @return page of users
      */
-    @Transactional(readOnly = true)
     public Page<UserDto> getAllUsers(Pageable pageable) {
         Page<User> userPage = userRepository.findAll(pageable);
         return userPage.map(userMapper::toDto);
@@ -83,7 +78,6 @@ public class UserService {
      * @return updated user
      * @throws ResourceNotFoundException if user not found
      */
-    @Transactional
     public UserDto updateUser(UUID id, UserUpdateDto updateDto) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + id));
@@ -100,7 +94,6 @@ public class UserService {
      * @param id user ID
      * @throws ResourceNotFoundException if user not found
      */
-    @Transactional
     public void deleteUser(UUID id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + id));

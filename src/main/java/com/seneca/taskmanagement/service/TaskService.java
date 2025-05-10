@@ -17,7 +17,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -40,7 +39,6 @@ public class TaskService {
      * @throws ResourceNotFoundException if assigned user not found
      * @throws BadRequestException if task type is invalid
      */
-    @Transactional
     public TaskDto createTask(TaskDto taskDto) {
         validateUserExists(taskDto.getAssignedUserId());
         Task task;
@@ -63,7 +61,6 @@ public class TaskService {
      * @return task data
      * @throws ResourceNotFoundException if task not found
      */
-    @Transactional(readOnly = true)
     public TaskDto getTaskById(UUID id) {
         Task task = taskRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Task not found with ID: " + id));
@@ -75,7 +72,6 @@ public class TaskService {
      *
      * @return list of all tasks
      */
-    @Transactional(readOnly = true)
     public List<TaskDto> getAllTasks() {
         List<Task> tasks = taskRepository.findAll();
         return taskMapper.toDtoListByType(tasks);
@@ -90,7 +86,6 @@ public class TaskService {
      * @param pageable   pagination information
      * @return page of filtered tasks
      */
-    @Transactional(readOnly = true)
     public Page<TaskDto> findTasksWithFilters(
             Optional<UUID> userId,
             Optional<TaskStatus> status,
@@ -113,7 +108,6 @@ public class TaskService {
      * @throws ResourceNotFoundException if task not found
      * @throws BadRequestException if task type mismatch
      */
-    @Transactional
     public TaskDto updateTask(UUID id, UpdateTaskRequest updateRequest) {
         Task task = taskRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Task not found with id: " + id));
@@ -188,7 +182,6 @@ public class TaskService {
      * @param id task ID
      * @throws ResourceNotFoundException if task not found
      */
-    @Transactional
     public void deleteTask(UUID id) {
         Task task = taskRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Task not found with ID: " + id));

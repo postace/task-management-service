@@ -101,7 +101,7 @@ public class UserControllerIntegrationTest {
         // Test Get All Users
         mockMvc.perform(get("/users"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].id").value(userId.toString()));
+                .andExpect(jsonPath("$.items[0].id").value(userId.toString()));
 
         // Test Delete User
         mockMvc.perform(delete("/users/{id}", userId))
