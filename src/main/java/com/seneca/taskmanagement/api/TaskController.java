@@ -66,7 +66,7 @@ public class TaskController {
             @Parameter(description = "Filter tasks by user ID") @RequestParam(required = false) Optional<UUID> userId,
             @Parameter(description = "Filter tasks by status") @RequestParam(required = false) Optional<TaskStatus> status,
             @Parameter(description = "Search tasks by name") @RequestParam(required = false) Optional<String> searchTerm,
-            @PageableDefault(size = 10) Pageable pageable) {
+            @PageableDefault() Pageable pageable) {
         Page<TaskDto> tasks = taskService.findTasksWithFilters(userId, status, searchTerm, pageable);
         return ResponseEntity.ok(PaginatedResponse.from(tasks));
     }

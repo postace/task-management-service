@@ -17,7 +17,7 @@ import java.util.Map;
 
 @Slf4j
 @Component
-@Order(Ordered.LOWEST_PRECEDENCE)
+@Order()
 public class RequestCompletionFilter extends OncePerRequestFilter {
 
     @Override

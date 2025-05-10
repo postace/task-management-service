@@ -23,7 +23,7 @@ A Spring Boot microservice for managing tasks (bugs and features) and users. Thi
   - QueryDSL for advanced filtering
   - PostgreSQL database
   - Flyway for database migrations
-  - Comprehensive error handling
+  - Comprehensive error handling, structured logging
   - API documentation with OpenAPI/Swagger
   - Unit and integration tests
   - Docker support

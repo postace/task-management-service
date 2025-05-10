@@ -18,6 +18,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -187,7 +188,7 @@ public class TaskService {
                 .orElseThrow(() -> new ResourceNotFoundException("Task not found with ID: " + id));
 
         task.setDeleted(true);
-        task.setDeletedAt(java.time.LocalDateTime.now());
+        task.setDeletedAt(OffsetDateTime.now());
         taskRepository.save(task);
         log.info("Soft deleted task with ID: {}", id);
     }

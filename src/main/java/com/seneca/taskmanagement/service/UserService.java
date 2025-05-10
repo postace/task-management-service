@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.UUID;
 
 @Service
@@ -99,7 +100,7 @@ public class UserService {
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + id));
 
         user.setDeleted(true);
-        user.setDeletedAt(LocalDateTime.now());
+        user.setDeletedAt(OffsetDateTime.now());
         userRepository.save(user);
         log.info("Soft deleted user with ID: {}", id);
     }

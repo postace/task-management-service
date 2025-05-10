@@ -11,7 +11,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.UUID;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "taskType")
@@ -37,11 +37,11 @@ public abstract class TaskDto {
     @Schema(description = "Detailed description of the task")
     private String description;
 
-    @Schema(description = "Creation timestamp", example = "2023-12-01T10:15:30")
-    private LocalDateTime createdAt;
+    @Schema(description = "Creation timestamp", example = "2023-12-01T10:15:30+07:00")
+    private OffsetDateTime createdAt;
 
-    @Schema(description = "Last update timestamp", example = "2023-12-01T10:15:30")
-    private LocalDateTime updatedAt;
+    @Schema(description = "Last update timestamp", example = "2023-12-01T10:15:30+07:00")
+    private OffsetDateTime updatedAt;
 
     @Schema(description = "Status of the task", example = "OPEN")
     private TaskStatus status;

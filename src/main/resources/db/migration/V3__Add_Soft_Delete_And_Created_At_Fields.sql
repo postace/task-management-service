@@ -1,13 +1,13 @@
 -- Add soft delete and created_at fields to users table
 ALTER TABLE users
     ADD COLUMN deleted BOOLEAN NOT NULL DEFAULT FALSE,
-    ADD COLUMN deleted_at TIMESTAMP,
-    ADD COLUMN created_at TIMESTAMP NOT NULL DEFAULT NOW();
+    ADD COLUMN deleted_at TIMESTAMP WITH TIME ZONE,
+    ADD COLUMN created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW();
 
 -- Add soft delete fields to tasks table
 ALTER TABLE tasks
     ADD COLUMN deleted BOOLEAN NOT NULL DEFAULT FALSE,
-    ADD COLUMN deleted_at TIMESTAMP;
+    ADD COLUMN deleted_at TIMESTAMP WITH TIME ZONE;
 
 -- Add comments for documentation
 COMMENT ON COLUMN users.deleted IS 'Flag indicating if the user has been soft deleted';
