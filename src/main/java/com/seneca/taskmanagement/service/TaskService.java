@@ -1,12 +1,7 @@
 package com.seneca.taskmanagement.service;
 
 import com.seneca.taskmanagement.domain.*;
-import com.seneca.taskmanagement.dto.BugDto;
-import com.seneca.taskmanagement.dto.FeatureDto;
-import com.seneca.taskmanagement.dto.TaskDto;
-import com.seneca.taskmanagement.dto.UpdateBugRequest;
-import com.seneca.taskmanagement.dto.UpdateFeatureRequest;
-import com.seneca.taskmanagement.dto.UpdateTaskRequest;
+import com.seneca.taskmanagement.dto.*;
 import com.seneca.taskmanagement.exception.BadRequestException;
 import com.seneca.taskmanagement.exception.ResourceNotFoundException;
 import com.seneca.taskmanagement.mapper.TaskMapper;
@@ -35,21 +30,22 @@ public class TaskService {
     /**
      * Create a new task
      *
-     * @param taskDto task data (can be bug or feature)
+     * @param createTaskDto task creation data (can be bug or feature)
      * @return created task
      * @throws ResourceNotFoundException if assigned user not found
      * @throws BadRequestException if task type is invalid
      */
-    public TaskDto createTask(TaskDto taskDto) {
-        validateUserExists(taskDto.getAssignedUserId());
+    public TaskDto createTask(CreateTaskDto createTaskDto) {
+        validateUserExists(createTaskDto.getAssignedUserId());
         Task task;
-        if (taskDto instanceof BugDto) {
-            task = taskMapper.toBugEntity((BugDto) taskDto);
-        } else if (taskDto instanceof FeatureDto) {
-            task = taskMapper.toFeatureEntity((FeatureDto) taskDto);
+        if (createTaskDto instanceof CreateBugDto) {
+            task = taskMapper.toBugEntity((CreateBugDto) createTaskDto);
+        } else if (createTaskDto instanceof CreateFeatureDto) {
+            task = taskMapper.toFeatureEntity((CreateFeatureDto) createTaskDto);
         } else {
             throw new BadRequestException("Invalid task type. Must be either BUG or FEATURE");
         }
+        
         Task savedTask = taskRepository.save(task);
         log.info("Created {} task with ID: {}", savedTask.getClass().getSimpleName(), savedTask.getId());
         return taskMapper.toDtoByType(savedTask);

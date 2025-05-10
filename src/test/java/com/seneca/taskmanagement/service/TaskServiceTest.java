@@ -1,9 +1,7 @@
 package com.seneca.taskmanagement.service;
 
 import com.seneca.taskmanagement.domain.*;
-import com.seneca.taskmanagement.dto.BugDto;
-import com.seneca.taskmanagement.dto.FeatureDto;
-import com.seneca.taskmanagement.dto.TaskDto;
+import com.seneca.taskmanagement.dto.*;
 import com.seneca.taskmanagement.dto.UpdateBugRequest;
 import com.seneca.taskmanagement.dto.UpdateFeatureRequest;
 import com.seneca.taskmanagement.exception.BadRequestException;
@@ -45,6 +43,8 @@ class TaskServiceTest {
     private TaskMapper taskMapper;
     private TaskService taskService;
 
+    private CreateBugDto createBugDto;
+    private CreateFeatureDto createFeatureDto;
     private BugDto bugDto;
     private FeatureDto featureDto;
     private Bug bug;
@@ -60,11 +60,34 @@ class TaskServiceTest {
         UUID bugId = UUID.randomUUID();
         UUID featureId = UUID.randomUUID();
 
+        createBugDto = CreateBugDto.builder()
+                .name("Test Bug")
+                .description("Test Bug Description")
+                .severity(Bug.BugSeverity.HIGH)
+                .priority(Bug.BugPriority.HIGH)
+                .stepsToReproduce("1. Step one\n2. Step two")
+                .environment("Production")
+                .assignedUserId(userId)
+                .build();
+
+        createFeatureDto = CreateFeatureDto.builder()
+                .name("Test Feature")
+                .description("Test Feature Description")
+                .businessValue("High business impact")
+                .deadline(LocalDate.now().plusDays(30))
+                .acceptanceCriteria("1. Feature works\n2. Tests pass")
+                .estimatedEffort(5)
+                .assignedUserId(userId)
+                .build();
+
         bugDto = BugDto.builder()
                 .id(bugId)
                 .name("Test Bug")
                 .description("Test Bug Description")
                 .severity(Bug.BugSeverity.HIGH)
+                .priority(Bug.BugPriority.HIGH)
+                .stepsToReproduce("1. Step one\n2. Step two")
+                .environment("Production")
                 .assignedUserId(userId)
                 .status(TaskStatus.OPEN)
                 .build();
@@ -108,7 +131,7 @@ class TaskServiceTest {
         when(taskRepository.save(any(Bug.class))).thenReturn(bug);
 
         // Act
-        TaskDto result = taskService.createTask(bugDto);
+        TaskDto result = taskService.createTask(createBugDto);
 
         // Assert
         assertInstanceOf(BugDto.class, result);
@@ -128,7 +151,7 @@ class TaskServiceTest {
         when(taskRepository.save(any(Feature.class))).thenReturn(feature);
 
         // Act
-        TaskDto result = taskService.createTask(featureDto);
+        TaskDto result = taskService.createTask(createFeatureDto);
 
         // Assert
         assertInstanceOf(FeatureDto.class, result);
@@ -148,7 +171,7 @@ class TaskServiceTest {
         when(userRepository.existsById(any(UUID.class))).thenReturn(false);
 
         // Act & Assert
-        assertThrows(ResourceNotFoundException.class, () -> taskService.createTask(bugDto));
+        assertThrows(ResourceNotFoundException.class, () -> taskService.createTask(createBugDto));
         verify(userRepository).existsById(userId);
         verifyNoInteractions(taskRepository);
     }

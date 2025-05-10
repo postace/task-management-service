@@ -15,15 +15,17 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-@Schema(description = "Bug task representation")
-public class BugDto extends TaskDto {
+@Schema(description = "Bug creation request")
+public class CreateBugDto extends CreateTaskDto {
 
+    @NotNull(message = "Bug severity is required")
     @Schema(description = "Severity level of the bug", example = "HIGH")
     private BugSeverity severity;
 
     @Schema(description = "Steps to reproduce the bug", example = "1. Login 2. Navigate to profile 3. Click edit")
     private String stepsToReproduce;
 
+    @NotNull(message = "Bug priority is required")
     @Schema(description = "Priority level of the bug", example = "HIGH")
     private BugPriority priority;
 

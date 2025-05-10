@@ -4,9 +4,8 @@ import com.seneca.taskmanagement.domain.Bug;
 import com.seneca.taskmanagement.domain.Feature;
 import com.seneca.taskmanagement.domain.Task;
 import com.seneca.taskmanagement.domain.User;
-import com.seneca.taskmanagement.dto.BugDto;
-import com.seneca.taskmanagement.dto.FeatureDto;
-import com.seneca.taskmanagement.dto.TaskDto;
+import com.seneca.taskmanagement.dto.*;
+
 import com.seneca.taskmanagement.repository.UserRepository;
 import org.mapstruct.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +26,22 @@ public abstract class TaskMapper {
     public abstract Bug toBugEntity(BugDto bugDto);
 
     public abstract Feature toFeatureEntity(FeatureDto featureDto);
+
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "deleted", ignore = true)
+    @Mapping(target = "deletedAt", ignore = true)
+    @Mapping(target = "status", constant = "OPEN")
+    public abstract Bug toBugEntity(CreateBugDto createBugDto);
+
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "deleted", ignore = true)
+    @Mapping(target = "deletedAt", ignore = true)
+    @Mapping(target = "status", constant = "OPEN")
+    public abstract Feature toFeatureEntity(CreateFeatureDto createFeatureDto);
 
     @Mapping(target = "createdAt", ignore = true)
     public abstract void updateBugFromDto(BugDto bugDto, @MappingTarget Bug bug);

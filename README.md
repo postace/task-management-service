@@ -122,7 +122,8 @@ src
 │   │               ├── exception       # Exception handling
 │   │               ├── mapper          # Entity-DTO mappers
 │   │               ├── repository      # Data access layer
-│   │               └── service         # Business logic
+│   │               ├── service         # Business logic
+│   │               └── util            # Utility classes
 │   └── resources
 │       ├── db
 │       │   └── migration              # Flyway migration scripts

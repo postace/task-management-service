@@ -2,6 +2,7 @@ package com.seneca.taskmanagement.api;
 
 import com.seneca.taskmanagement.domain.TaskStatus;
 import com.seneca.taskmanagement.dto.BugDto;
+import com.seneca.taskmanagement.dto.CreateTaskDto;
 import com.seneca.taskmanagement.dto.FeatureDto;
 import com.seneca.taskmanagement.dto.PaginatedResponse;
 import com.seneca.taskmanagement.dto.TaskDto;
@@ -42,8 +43,8 @@ public class TaskController {
             @ApiResponse(responseCode = "400", description = "Invalid input"),
             @ApiResponse(responseCode = "404", description = "Assigned user not found")
     })
-    public ResponseEntity<TaskDto> createTask(@Valid @RequestBody TaskDto taskDto) {
-        TaskDto createdTask = taskService.createTask(taskDto);
+    public ResponseEntity<TaskDto> createTask(@Valid @RequestBody CreateTaskDto createTaskDto) {
+        TaskDto createdTask = taskService.createTask(createTaskDto);
         return new ResponseEntity<>(createdTask, HttpStatus.CREATED);
     }
 
