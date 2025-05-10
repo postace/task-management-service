@@ -1,6 +1,7 @@
 package com.seneca.taskmanagement.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.seneca.taskmanagement.config.TestContainersConfig;
 import com.seneca.taskmanagement.dto.BugDto;
 import com.seneca.taskmanagement.dto.FeatureDto;
 import com.seneca.taskmanagement.dto.TaskDto;
@@ -35,21 +36,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @Testcontainers
 @ActiveProfiles("test")
-public class TaskControllerIntegrationTest {
-
-    @Container
-    @SuppressWarnings("resource")
-    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:15-alpine")
-            .withDatabaseName("testdb")
-            .withUsername("test")
-            .withPassword("test");
-
-    @DynamicPropertySource
-    static void registerPgProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.datasource.url", postgres::getJdbcUrl);
-        registry.add("spring.datasource.username", postgres::getUsername);
-        registry.add("spring.datasource.password", postgres::getPassword);
-    }
+public class TaskControllerIntegrationTest extends TestContainersConfig {
 
     @Autowired
     private MockMvc mockMvc;

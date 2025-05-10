@@ -1,6 +1,7 @@
 package com.seneca.taskmanagement.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.seneca.taskmanagement.config.TestContainersConfig;
 import com.seneca.taskmanagement.dto.UserDto;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,23 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @Testcontainers
 @ActiveProfiles("test")
-public class UserControllerIntegrationTest {
-
-    @Container
-    // TestContainers manage lifecycle of the container will auto release resource when test is done.
-    // So we don't need to use try-with-resources block
-    @SuppressWarnings("resource") 
-    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:15-alpine")
-            .withDatabaseName("testdb")
-            .withUsername("test")
-            .withPassword("test");
-
-    @DynamicPropertySource
-    static void registerPgProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.datasource.url", postgres::getJdbcUrl);
-        registry.add("spring.datasource.username", postgres::getUsername);
-        registry.add("spring.datasource.password", postgres::getPassword);
-    }
+public class UserControllerIntegrationTest extends TestContainersConfig {
 
     @Autowired
     private MockMvc mockMvc;
