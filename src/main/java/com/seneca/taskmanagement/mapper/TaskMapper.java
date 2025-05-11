@@ -5,7 +5,7 @@ import com.seneca.taskmanagement.domain.Feature;
 import com.seneca.taskmanagement.domain.Task;
 import com.seneca.taskmanagement.domain.User;
 import com.seneca.taskmanagement.dto.*;
-
+import com.seneca.taskmanagement.exception.ResourceNotFoundException;
 import com.seneca.taskmanagement.repository.UserRepository;
 import org.mapstruct.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,12 +19,16 @@ public abstract class TaskMapper {
     @Autowired
     protected UserRepository userRepository;
 
+    @Mapping(target = "assignedUserId", source = "assignedUser.id")
     public abstract BugDto toBugDto(Bug bug);
 
+    @Mapping(target = "assignedUserId", source = "assignedUser.id")
     public abstract FeatureDto toFeatureDto(Feature feature);
 
+    @Mapping(target = "assignedUser", source = "assignedUserId", qualifiedByName = "mapAssignedUser")
     public abstract Bug toBugEntity(BugDto bugDto);
 
+    @Mapping(target = "assignedUser", source = "assignedUserId", qualifiedByName = "mapAssignedUser")
     public abstract Feature toFeatureEntity(FeatureDto featureDto);
 
     @Mapping(target = "id", ignore = true)
@@ -33,6 +37,7 @@ public abstract class TaskMapper {
     @Mapping(target = "deleted", ignore = true)
     @Mapping(target = "deletedAt", ignore = true)
     @Mapping(target = "status", constant = "OPEN")
+    @Mapping(target = "assignedUser", source = "assignedUserId", qualifiedByName = "mapAssignedUser")
     public abstract Bug toBugEntity(CreateBugDto createBugDto);
 
     @Mapping(target = "id", ignore = true)
@@ -41,12 +46,15 @@ public abstract class TaskMapper {
     @Mapping(target = "deleted", ignore = true)
     @Mapping(target = "deletedAt", ignore = true)
     @Mapping(target = "status", constant = "OPEN")
+    @Mapping(target = "assignedUser", source = "assignedUserId", qualifiedByName = "mapAssignedUser")
     public abstract Feature toFeatureEntity(CreateFeatureDto createFeatureDto);
 
     @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "assignedUser", source = "assignedUserId", qualifiedByName = "mapAssignedUser")
     public abstract void updateBugFromDto(BugDto bugDto, @MappingTarget Bug bug);
 
     @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "assignedUser", source = "assignedUserId", qualifiedByName = "mapAssignedUser")
     public abstract void updateFeatureFromDto(FeatureDto featureDto, @MappingTarget Feature feature);
 
     // Convert task to appropriate DTO based on its type
@@ -64,5 +72,17 @@ public abstract class TaskMapper {
         return tasks.stream()
                 .map(this::toDtoByType)
                 .toList();
+    }
+    
+    /**
+     * Maps a user ID to a User entity for task mapping
+     */
+    @Named("mapAssignedUser")
+    protected User mapAssignedUser(UUID userId) {
+        if (userId == null) {
+            return null;
+        }
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + userId));
     }
 }
