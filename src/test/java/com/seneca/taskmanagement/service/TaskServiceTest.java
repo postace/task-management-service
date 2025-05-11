@@ -54,6 +54,7 @@ class TaskServiceTest {
     @BeforeEach
     void setUp() {
         taskMapper = new TaskMapperImpl();
+        ((TaskMapperImpl) taskMapper).setUserRepository(userRepository);
         taskService = new TaskService(taskRepository, userRepository, taskMapper);
 
         userId = UUID.randomUUID();
@@ -129,6 +130,7 @@ class TaskServiceTest {
         // Arrange
         when(userRepository.existsById(any(UUID.class))).thenReturn(true);
         when(taskRepository.save(any(Bug.class))).thenReturn(bug);
+        when(userRepository.findById(any(UUID.class))).thenReturn(Optional.of(new User()));
 
         // Act
         TaskDto result = taskService.createTask(createBugDto);
@@ -149,6 +151,7 @@ class TaskServiceTest {
         // Arrange
         when(userRepository.existsById(any(UUID.class))).thenReturn(true);
         when(taskRepository.save(any(Feature.class))).thenReturn(feature);
+        when(userRepository.findById(any(UUID.class))).thenReturn(Optional.of(new User()));
 
         // Act
         TaskDto result = taskService.createTask(createFeatureDto);

@@ -36,6 +36,9 @@ public abstract class CreateTaskDto {
     @Schema(description = "ID of the user assigned to this task")
     private UUID assignedUserId;
 
+    @Schema(description = "Status of the task", example = "OPEN")
+    private TaskStatus status;
+
     @Schema(description = "Type discriminator for the task")
     public abstract String getTaskType();
 }

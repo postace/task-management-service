@@ -3,6 +3,9 @@ package com.seneca.taskmanagement.api;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.seneca.taskmanagement.config.TestContainersConfig;
 import com.seneca.taskmanagement.dto.UserDto;
+import com.seneca.taskmanagement.repository.UserRepository;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -31,6 +34,14 @@ public class UserControllerIntegrationTest extends TestContainersConfig {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @AfterEach
+    public void cleanUp() {
+        userRepository.deleteAll();
+    }
 
     @Test
     void userCrudOperations() throws Exception {

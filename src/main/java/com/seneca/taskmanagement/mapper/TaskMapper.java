@@ -18,6 +18,12 @@ public abstract class TaskMapper {
 
     @Autowired
     protected UserRepository userRepository;
+    
+    // Add setter for testing
+    @Autowired
+    public void setUserRepository(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     @Mapping(target = "assignedUserId", source = "assignedUser.id")
     public abstract BugDto toBugDto(Bug bug);
@@ -36,8 +42,8 @@ public abstract class TaskMapper {
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "deleted", ignore = true)
     @Mapping(target = "deletedAt", ignore = true)
-    @Mapping(target = "status", constant = "OPEN")
     @Mapping(target = "assignedUser", source = "assignedUserId", qualifiedByName = "mapAssignedUser")
+    @Mapping(target = "status", source = "status")
     public abstract Bug toBugEntity(CreateBugDto createBugDto);
 
     @Mapping(target = "id", ignore = true)
@@ -45,7 +51,7 @@ public abstract class TaskMapper {
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "deleted", ignore = true)
     @Mapping(target = "deletedAt", ignore = true)
-    @Mapping(target = "status", constant = "OPEN")
+    @Mapping(target = "status", source = "status")
     @Mapping(target = "assignedUser", source = "assignedUserId", qualifiedByName = "mapAssignedUser")
     public abstract Feature toFeatureEntity(CreateFeatureDto createFeatureDto);
 
