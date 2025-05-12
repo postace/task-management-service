@@ -128,6 +128,8 @@ src
 │       ├── db
 │       │   └── migration              # Flyway migration scripts
 │       └── application.yml            # Application configuration
+│       └── application-dev.yml        # Application configuration for development
+│       └── application-prod.yml       # Application configuration for production
 └── test                               # Test classes
 ```
 
@@ -144,9 +146,6 @@ The application includes both unit tests and integration tests:
 ```bash
 # Run all tests
 ./mvnw test
-
-# Run only unit tests
-./mvnw test -Dtest=*Test
 
 # Run only integration tests
 ./mvnw test -Dtest=*IntegrationTest
@@ -191,7 +190,11 @@ The benefits of improved query performance and simpler maintenance outweigh thes
 - Implement caching for frequently accessed data
 - Add metrics and monitoring (e.g., Micrometer, Prometheus)
 - Implement rate limiting for API endpoints
-
-## License
-
-This project is licensed under the Apache License 2.0 - see the LICENSE file for details.
+- Task Type Extensibility:
+  - Add new task types (e.g., Epic, Subtask)
+  - Abstract common task behavior in the base Task class
+- Status Workflow:
+  - Easily extensible to add a workflow engine for task state transitions
+  - Additional statuses can be added to the enum
+- API Versioning:
+  - API paths include version (v1) to allow for future changes

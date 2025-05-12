@@ -1,1 +1,0 @@
-- Why mvn test does not stop?
