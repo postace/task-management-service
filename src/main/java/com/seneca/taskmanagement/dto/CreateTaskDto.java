@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.seneca.taskmanagement.domain.TaskStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -39,6 +40,8 @@ public abstract class CreateTaskDto {
     @Schema(description = "Status of the task", example = "OPEN")
     private TaskStatus status;
 
-    @Schema(description = "Type discriminator for the task")
+    @NotNull(message = "Task type is required")
+    @Schema(description = "Type discriminator for the task", example = "BUG", allowableValues = {"BUG", "FEATURE"})
     public abstract String getTaskType();
+  
 }

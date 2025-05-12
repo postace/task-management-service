@@ -137,7 +137,44 @@ src
 
 ### Manual Usage
 
-Once the application is running, go to this url `http://localhost:8080/api/swagger-ui.html` then test it yourself
+Once the application is running, go to this url `http://localhost:8080/api/swagger-ui.html` then test it yourself.
+
+Please scrolling down to the section of Schemas to see schema for each request.
+
+Also, we can use some example request below to create user/bug/feature:
+
+Create user request body example
+```json
+{
+  "username": "johndoe",
+  "fullName": "John Doe"
+}
+```
+
+Create Bug request body example:
+```json
+{
+  "taskType" : "BUG",
+  "name" : "Critical Login Bug",
+  "description" : "Users unable to login",
+  "status" : "OPEN",
+  "severity" : "HIGH",
+  "priority" : "HIGH"
+}
+```
+
+Create Feature request body example:
+```json
+{
+  "taskType" : "FEATURE",
+  "name" : "Add OAuth Support",
+  "description" : "Implement OAuth authentication",
+  "status" : "OPEN",
+  "businessValue" : "High ROI potential",
+  "deadline" : "2025-05-26",
+  "estimatedEffort" : 5
+}
+```
 
 ### Automated Test
 
